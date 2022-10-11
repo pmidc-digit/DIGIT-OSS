@@ -6,6 +6,7 @@ import CreateNewSurvey from "../../../components/Surveys/SurveyForms";
 
 export const answerTypeEnum = {
   "Short Answer": "SHORT_ANSWER_TYPE",
+  "Short answer": "SHORT_ANSWER_TYPE",
   Paragraph: "LONG_ANSWER_TYPE",
   "Multiple Choice": "MULTIPLE_ANSWER_TYPE",
   "Check Boxes": "CHECKBOX_ANSWER_TYPE",
@@ -16,12 +17,21 @@ export const answerTypeEnum = {
 
 /**TODO NRJ-egov handle this by setting correct state inside the surveyFormMaker */
 export const mapQuestions = (questions =[]) =>{
+  //Added this condition to avoid a bug in which the question type is set as undefined when question type dropdown is not touched and create survey form is submitted. 
+  questions = questions.map(ques=>{
+    if(!ques?.formConfig?.type){
+      return {
+        ...ques,
+        formConfig: { ...ques?.formConfig, type:"Short Answer"}
+      }
+    }
+    return ques
+  })
   if(!questions.length) return;
   return questions.map(({formConfig},index)=>{
       const {options:choices, questionStatement,required, type:stringType} = formConfig;
-
-      const finalQuestion = {questionStatement, required, type:answerTypeEnum[stringType]};
-      if(stringType === "Multiple Choice" || stringType ==="Check Boxes") {
+      const finalQuestion = {questionStatement, required, type: typeof stringType === "object" && stringType !== null ? stringType.value : (stringType.title ?  answerTypeEnum[stringType.title] : answerTypeEnum[stringType])};
+      if(stringType?.title === "Multiple Choice" || stringType?.title ==="Check Boxes") {
         finalQuestion["options"] = choices;
       }
       return finalQuestion;
@@ -40,7 +50,6 @@ const NewSurveys = () => {
         tenantIds: tenantIds.map(({code})=>(code)),
         title,
         description,
-        collectCitizenInfo: collectCitizenInfo.code,
         startDate: new Date(`${fromDate} ${fromTime}`).getTime(),
         endDate: new Date(`${toDate} ${toTime}`).getTime(),
         questions:mappedQuestions
@@ -62,7 +71,6 @@ const NewSurveys = () => {
     toDate: "",
     toTime: "",
     questions: {},
-    collectCitizenInfo: "",
     // tenantIds:[]
     tenantIds:userUlbs,
   };

@@ -3,9 +3,15 @@ const createProxy = createProxyMiddleware({
   target: process.env.REACT_APP_PROXY_URL,
   changeOrigin: true,
 });
+const assetsProxy = createProxyMiddleware({
+  target:
+    process.env.REACT_APP_PROXY_ASSETS || "https://mseva-uat.lgpunjab.gov.in",
+  changeOrigin: true,
+});
 module.exports = function (app) {
   [
-    "/egov-mdms-service",
+    "/access/v1/actions/mdms",
+    // "/egov-mdms-service",
     "/egov-location",
     "/localization",
     "/egov-workflow-v2",
@@ -23,7 +29,36 @@ module.exports = function (app) {
     "/vendor",
     "/property-services",
     "/fsm-calculator/v1/billingSlab/_search",
-  ].forEach((location) =>
-    app.use(location, createProxy)
-  );
+    "/pt-calculator-v2",
+    "/dashboard-analytics",
+    "/echallan-services",
+    "/egov-searcher/bill-genie/mcollectbills/_get",
+    "/egov-searcher/bill-genie/billswithaddranduser/_get",
+    "/egov-searcher/bill-genie/waterbills/_get",
+    "/egov-searcher/bill-genie/seweragebills/_get",
+    "/egov-pdf/download/UC/mcollect-challan",
+    "/egov-hrms/employees/_count",
+    "/tl-services/v1/_create",
+    "/tl-services/v1/_search",
+    "/egov-url-shortening/shortener",
+    "/inbox/v1/_search",
+    "/tl-services",
+    "/tl-calculator",
+    "/edcr",
+    "/bpa-services",
+    "/noc-services",
+    "/egov-user-event",
+    "/egov-document-uploader",
+    "/egov-pdf",
+    "/egov-survey-services",
+    "/ws-services",
+    "/sw-services",
+    "/ws-calculator",
+    "/sw-calculator/",
+    "/egov-searcher",
+    "/report",
+    "/inbox/v1/dss/_search",
+    "/inbox/v1/elastic/_search",
+  ].forEach((location) => app.use(location, createProxy));
+  ["/egov-mdms-service"].forEach((location) => app.use(location, assetsProxy));
 };

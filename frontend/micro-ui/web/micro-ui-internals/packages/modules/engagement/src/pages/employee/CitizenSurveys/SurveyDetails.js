@@ -15,10 +15,10 @@ import { answerTypeEnum } from "./NewSurvey";
  */
 const filterQuestion = (question) => {
   if (!question) return;
-  if (question.type !== "Multiple Choice" || question.type !== "Check Boxes") {
-    delete question.options;
-  }
-  return { ...question, type: answerTypeEnum[question.type] };
+  // if (question.type !== "Multiple Choice" || question.type !== "Check Boxes") {
+  //   delete question.options;
+  // }
+  return { ...question, type: answerTypeEnum[question.type],options:question?.options };
 };
 
 /**TODO : Think of better to do this possibly in service layer */
@@ -42,7 +42,7 @@ const SurveyDetails = ({ location, match }) => {
   const [displayMenu, setDisplayMenu] = useState(false);
   const [userAction, setUserAction] = useState(undefined);
   const tenantId = Digit.ULBService.getCurrentTenantId();
-  const tenantIdForInboxSearch = window.Digit.SessionStorage.get("CITIZENSURVEY.INBOX").searchForm.tenantIds.code
+  const tenantIdForInboxSearch = window?.Digit.SessionStorage?.get("CITIZENSURVEY.INBOX")?.searchForm?.tenantIds?.code || tenantId
   const { isLoading, data: surveyData } = Digit.Hooks.survey.useSearch(
     { tenantIds: tenantIdForInboxSearch, uuid: id },
     {
@@ -53,7 +53,6 @@ const SurveyDetails = ({ location, match }) => {
           uuid: surveyObj.uuid,
           title: surveyObj.title,
           description: surveyObj.description,
-          collectCitizenInfo: { code: surveyObj.collectCitizenInfo },
           fromDate: format(new Date(surveyObj.startDate), "yyyy-MM-dd"),
           toDate: format(new Date(surveyObj.endDate), "yyyy-MM-dd"),
           fromTime: format(new Date(surveyObj.startDate), "hh:mm"),
@@ -67,6 +66,7 @@ const SurveyDetails = ({ location, match }) => {
             surveyId
           })),
           status: surveyObj.status,
+          tenantId: { code: surveyObj.tenantId },
         };
       },
     }
@@ -113,10 +113,9 @@ const SurveyDetails = ({ location, match }) => {
       SurveyEntity: {
         uuid: surveyData.uuid,
         //tenantIds: tenantIds.map(({ code }) => code),
-        tenantId: tenantIds[0]?.code,
+        tenantId: tenantIds[0]?.code ? tenantIds[0]?.code : surveyData.tenantId.code,
         title,
         description,
-        collectCitizenInfo: collectCitizenInfo.code,
         startDate: new Date(`${fromDate} ${fromTime}`).getTime(),
         endDate: new Date(`${toDate} ${toTime}`).getTime(),
         questions: mappedQuestions,
@@ -134,7 +133,7 @@ const SurveyDetails = ({ location, match }) => {
 
   const handleDelete = () => {
     const details = {
-      SurveyEntity: { ...surveyData, collectCitizenInfo: surveyData.collectCitizenInfo.code },
+      SurveyEntity: { ...surveyData },
     };
     history.push("/digit-ui/employee/engagement/surveys/delete-response", details);
   };
@@ -148,7 +147,6 @@ const SurveyDetails = ({ location, match }) => {
         status: "ACTIVE",
         startDate: new Date(`${fromDate} ${fromTime}`).getTime(),
         endDate: new Date(`${toDate} ${toTime}`).getTime(),
-        collectCitizenInfo: surveyData.collectCitizenInfo.code,
         questions: surveyData.questions.map(filterQuestion),
         tenantId,
       },
@@ -159,9 +157,10 @@ const SurveyDetails = ({ location, match }) => {
   const handleMarkInactive = () => {
     const details = {
       SurveyEntity: { ...surveyData,
+        tenantId,
         questions: surveyData.questions.map(filterQuestion), 
         status: "INACTIVE", 
-        collectCitizenInfo: surveyData.collectCitizenInfo.code },
+         },
     };
     history.push("/digit-ui/employee/engagement/surveys/update-response", details);
   };
