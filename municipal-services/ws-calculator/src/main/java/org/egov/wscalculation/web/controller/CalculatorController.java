@@ -10,6 +10,12 @@ import org.egov.wscalculation.config.WSCalculationConfiguration;
 import org.egov.wscalculation.constants.WSCalculationConstant;
 import org.egov.wscalculation.service.*;
 import org.egov.wscalculation.web.models.*;
+import org.egov.wscalculation.web.models.DemandResponse;
+import org.egov.wscalculation.web.models.GetBillCriteria;
+import org.egov.wscalculation.web.models.RequestInfoWrapper;
+import org.egov.wscalculation.service.DemandService;
+import org.egov.wscalculation.service.WSCalculationService;
+import org.egov.wscalculation.service.WSCalculationServiceImpl;
 import org.egov.wscalculation.util.ResponseInfoFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -90,6 +96,10 @@ public class CalculatorController {
 		wSCalculationService.generateDemandBasedOnTimePeriod(requestInfoWrapper.getRequestInfo());
 	}
 	
+	@PostMapping("/_jobbillscheduler")
+	public void jobbillscheduler(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
+		wSCalculationService.generateBillBasedLocality(requestInfoWrapper.getRequestInfo());
+	}
 	@PostMapping("/_applyAdhocTax")
 	public ResponseEntity<CalculationRes> applyAdhocTax(@Valid @RequestBody AdhocTaxReq adhocTaxReq) {
 		List<Calculation> calculations = wSCalculationServiceImpl.applyAdhocTax(adhocTaxReq);
