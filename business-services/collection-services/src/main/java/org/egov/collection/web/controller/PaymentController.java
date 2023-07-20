@@ -40,8 +40,10 @@
 
 package org.egov.collection.web.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.HashSet;
 
 import javax.validation.Valid;
 
@@ -69,11 +71,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/payments")
+@Slf4j
 public class PaymentController {
 
     @Autowired
@@ -157,11 +164,41 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> plainSearch(@ModelAttribute PaymentSearchCriteria paymentSearchCriteria,
                                                        @RequestBody @Valid final RequestInfoWrapper requestInfoWrapper) {
 
+        log.info("businessservice: " + paymentSearchCriteria.getBusinessServices());
+        log.info("paymentSearchCriteria: " + paymentSearchCriteria.getTenantId());
+
         final RequestInfo requestInfo = requestInfoWrapper.getRequestInfo();
 
         List<Payment> payments = paymentService.plainSearch(paymentSearchCriteria);
 
         return getSuccessResponse(payments, requestInfo);
     }
+    
+    @RequestMapping(value = "ws/migration/_create", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<PaymentResponse> migration(@RequestBody @Valid PaymentRequest paymentRequest) {
+    	log.info("paymentRequest: " + paymentRequest);
 
+        Payment payment = paymentService.createPaymentForWSMigration(paymentRequest);
+        return getSuccessResponse(Collections.singletonList(payment), paymentRequest.getRequestInfo());
+
+    }
+    
+    @RequestMapping(value = "/_update", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<PaymentResponse> update(@RequestBody @Valid PaymentSearchCriteria paymentSearchCriteria,
+    		  @RequestBody @Valid final RequestInfoWrapper requestInfoWrapper) {
+    	log.info("PaymentSearchCriteria: " + paymentSearchCriteria);
+    	
+    	List<Payment> payment=paymentService.plainSearch(paymentSearchCriteria);
+
+        Payment paymentUpdated = paymentService.updatePaymentForFilestore(payment.get(0));
+        final RequestInfo requestInfo = requestInfoWrapper.getRequestInfo();
+
+        List<Payment> updatedPayments=new ArrayList<Payment>();
+        updatedPayments.add(paymentUpdated);
+        return getSuccessResponse(updatedPayments, requestInfo);
+
+    }
+    
 }

@@ -232,13 +232,67 @@ public class PaymentRepository {
 
     }
 
+    public void updateFileStoreIdToNull(Payment payment) {
+
+
+        List<MapSqlParameterSource> fileStoreIdSource = new ArrayList<>();
+
+        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+        sqlParameterSource.addValue("id", payment.getId());
+        fileStoreIdSource.add(sqlParameterSource);
+
+        namedParameterJdbcTemplate.batchUpdate(FILESTOREID_UPDATE_NULL_PAYMENT_SQL, fileStoreIdSource.toArray(new MapSqlParameterSource[0]));
+
+    }
+
     public List<String> fetchPaymentIds(PaymentSearchCriteria paymentSearchCriteria) {
 
+        StringBuilder query = new StringBuilder("SELECT id from egcl_payment ");
+        boolean whereCluaseApplied = false;
+        boolean isTenantPresent = true;
         Map<String, Object> preparedStatementValues = new HashMap<>();
         preparedStatementValues.put("offset", paymentSearchCriteria.getOffset());
         preparedStatementValues.put("limit", paymentSearchCriteria.getLimit());
+        if (paymentSearchCriteria.getTenantId() != null && !paymentSearchCriteria.getTenantId().equals("pb")) {
+            query.append(" WHERE tenantid=:tenantid ");
+            preparedStatementValues.put("tenantid", paymentSearchCriteria.getTenantId());
+            whereCluaseApplied = true;
+        } else {
+            isTenantPresent = false;
+            whereCluaseApplied = false;
+            query.append(" WHERE id in (select paymentid from egcl_paymentdetail WHERE createdtime between :fromDate and :toDate) ");
+            preparedStatementValues.put("fromDate", paymentSearchCriteria.getFromDate());
+            preparedStatementValues.put("toDate", paymentSearchCriteria.getToDate());
+        }
 
-        return namedParameterJdbcTemplate.query("SELECT id from egcl_payment ORDER BY createdtime offset " + ":offset " + "limit :limit", preparedStatementValues, new SingleColumnRowMapper<>(String.class));
+        if (paymentSearchCriteria.getBusinessServices() != null && isTenantPresent && whereCluaseApplied) {
+            if (whereCluaseApplied) {
+                query.append(" AND id in (select paymentid from egcl_paymentdetail where tenantid=:tenantid AND businessservice=:businessservice) ");
+                preparedStatementValues.put("tenantid", paymentSearchCriteria.getTenantId());
+                preparedStatementValues.put("businessservice", paymentSearchCriteria.getBusinessServices());
+            }
+        }
+
+        if (paymentSearchCriteria.getBusinessService() != null && isTenantPresent && whereCluaseApplied) {
+            log.info("In side the repo before query: " + paymentSearchCriteria.getBusinessService());
+            query.append(" AND id in (select paymentid from egcl_paymentdetail where tenantid=:tenantid AND businessservice=:businessservice) ");
+            preparedStatementValues.put("tenantid", paymentSearchCriteria.getTenantId());
+            preparedStatementValues.put("businessservice", paymentSearchCriteria.getBusinessService());
+        }
+
+        if (paymentSearchCriteria.getFromDate() != null && isTenantPresent && whereCluaseApplied) {
+            log.info("In side the repo before query: " + paymentSearchCriteria.getBusinessService());
+            query.append("  AND  createdtime between :fromDate and :toDate");
+            preparedStatementValues.put("fromDate", paymentSearchCriteria.getFromDate());
+            preparedStatementValues.put("toDate", paymentSearchCriteria.getToDate());
+
+        }
+
+
+        query.append(" ORDER BY createdtime offset " + ":offset " + "limit :limit");
+
+        log.info("fetchPaymentIds query: " + query.toString());
+        return namedParameterJdbcTemplate.query(query.toString(), preparedStatementValues, new SingleColumnRowMapper<>(String.class));
 
     }
 
@@ -248,4 +302,5 @@ public class PaymentRepository {
         log.info("query: "+query);
         return namedParameterJdbcTemplate.query(query, preparedStatementValues, new SingleColumnRowMapper<>(String.class));
     }
+
 }
