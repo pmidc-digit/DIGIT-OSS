@@ -80,9 +80,9 @@ public class IngestServiceImpl implements IngestService {
 		} catch (Exception e) { 
 			LOGGER.error("Encountered an Exception while Pushing the Data to pipeline on Ingest Service " + e.getMessage());
 			ErrorWrapper errorWrapper = errorHandover(incomingData); 
-			ingestProducer.pushToPipeline(errorWrapper, Constants.KafkaTopics.ERROR_INTENT, null);
+			ingestProducer.pushToPipeline(errorWrapper, Constants.KafkaTopics.ERROR_INTENT, Constants.KafkaTopics.ERROR_INTENT);
 		}
-		ingestProducer.pushToPipeline(incomingData, topic, null);
+		ingestProducer.pushToPipeline(incomingData, topic, key);
 		return true;
 	}
 	
