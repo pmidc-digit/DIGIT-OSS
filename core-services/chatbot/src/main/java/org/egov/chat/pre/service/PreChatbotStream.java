@@ -14,6 +14,7 @@ import org.egov.chat.models.egovchatserdes.EgovChatSerdes;
 import org.egov.chat.pre.authorization.UserService;
 import org.egov.chat.util.CommonAPIErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -33,13 +34,16 @@ public class PreChatbotStream {
     @Autowired
     private CommonAPIErrorMessage commonAPIErrorMessage;
 
+    @Value("${consumer.group.id.prefix}")
+    private String consumerGroupIdPrefix;
+
     private String streamName = "pre-chatbot";
 
 
     public void startPreChatbotStream(String inputTopic, String outputTopic) {
 
         Properties streamConfiguration = kafkaStreamsConfig.getDefaultStreamConfiguration();
-        streamConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, streamName);
+        streamConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, consumerGroupIdPrefix + streamName);
         StreamsBuilder builder = new StreamsBuilder();
         KStream<String, EgovChat> messagesKStream = builder.stream(inputTopic, Consumed.with(Serdes.String(),
                 EgovChatSerdes.getSerde()));
@@ -50,7 +54,7 @@ public class PreChatbotStream {
                 userService.addLoggedInUser(chatNode);
                 return Collections.singletonList(chatNode);
             } catch (Exception e) {
-                log.error("error in pre-chatbot stream", e);
+                log.error("error in pre-chatbot stream : " +  e.getLocalizedMessage());
                 commonAPIErrorMessage.resetFlowDuetoError(chatNode);
                 return Collections.emptyList();
             }

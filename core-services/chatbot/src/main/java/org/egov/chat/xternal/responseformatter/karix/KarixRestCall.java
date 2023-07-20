@@ -1,4 +1,4 @@
-package org.egov.chat.xternal.responseformatter.ValueFirst;
+package org.egov.chat.xternal.responseformatter.karix;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +15,13 @@ import org.springframework.web.client.RestTemplate;
 @PropertySource("classpath:application.properties")
 @Slf4j
 @Service
-public class ValueFirstRestCall {
+public class KarixRestCall {
 
-    @Value("${valuefirst.send.message.url}")
-    private String valueFirstSendMessageUrl;
+    @Value("${karix.send.message.url}")
+    private String karixSendMessageUrl;
 
+    @Value("${karix.authentication.token}")
+    private String karixAuthenticationToken;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -30,11 +32,14 @@ public class ValueFirstRestCall {
 
             HttpEntity<JsonNode> request = new HttpEntity<>(response, httpHeaders);
 
-            ResponseEntity<JsonNode> valueFirstResponse = restTemplate.postForEntity(valueFirstSendMessageUrl, request, JsonNode.class);
+            ResponseEntity<JsonNode> karixResponse = restTemplate.postForEntity(karixSendMessageUrl, request, JsonNode.class);
 
-            log.info("ValueFirst Send Message Response : " + valueFirstResponse.toString());
+            // TODO : Remove delay after discussing with Karix
+            Thread.sleep(2000);
+
+            log.info("Karix Send Message Response : " + karixResponse.toString());
         } catch (Exception e) {
-            log.error("error in value first rest call", e);
+            log.error(e.getMessage());
         }
 
     }
@@ -42,7 +47,7 @@ public class ValueFirstRestCall {
     HttpHeaders getDefaultHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.set("Authentication", karixAuthenticationToken);
+        headers.set("Authentication", karixAuthenticationToken);
         return headers;
     }
 

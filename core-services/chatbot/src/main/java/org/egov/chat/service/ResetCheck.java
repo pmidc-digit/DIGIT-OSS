@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ResetCheck {
 
-    private String streamName = "reset-check";
-
     @Value("${flow.reset.keywords}")
     private String resetKeywordsString;
 
@@ -28,7 +26,7 @@ public class ResetCheck {
 
             return false;
         } catch (Exception e) {
-            log.error("error in reset check", e);
+            log.error("error in reset check", e.getLocalizedMessage());
             return false;
         }
     }

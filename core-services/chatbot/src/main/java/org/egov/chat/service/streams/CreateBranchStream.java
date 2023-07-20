@@ -19,6 +19,7 @@ import org.egov.chat.service.AnswerStore;
 import org.egov.chat.service.validation.Validator;
 import org.egov.chat.util.CommonAPIErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -44,9 +45,12 @@ public class CreateBranchStream extends CreateStream {
     @Autowired
     private CommonAPIErrorMessage commonAPIErrorMessage;
 
+    @Value("${consumer.group.id.prefix}")
+    private String consumerGroupIdPrefix;
+
     public void createEvaluateAnswerStreamForConfig(JsonNode config, String answerInputTopic, String questionTopic) {
 
-        String streamName = config.get("name").asText() + "-answer";
+        String streamName = consumerGroupIdPrefix + config.get("name").asText() + "-answer";
 
         List<String> branchNames = getBranchNames(config);
         List<Predicate<String, EgovChat>> predicates = makePredicatesForBranches(branchNames, config);
@@ -77,7 +81,7 @@ public class CreateBranchStream extends CreateStream {
 
                     return Collections.singletonList(chatNode);
                 } catch (Exception e) {
-                    log.error("error in branch stream", e);
+                    log.error("error in branch stream" + e.getLocalizedMessage() + " for Node : " + config.get("name").asText());
                     commonAPIErrorMessage.resetFlowDuetoError(chatNode);
                     return Collections.emptyList();
                 }
@@ -108,8 +112,8 @@ public class CreateBranchStream extends CreateStream {
                     if (answer.equalsIgnoreCase(branchName)) {
                         return true;
                     }
-                } catch (Exception ex) {
-                    log.error("error in createbranch stream", ex);
+                } catch (Exception e) {
+                    log.error("error in createbranch stream" + e.getLocalizedMessage() + " for Node : " + config.get("name").asText());
                 }
                 return false;
             };

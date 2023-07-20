@@ -21,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,8 +45,7 @@ public class PGRComplaintTrack implements RestEndpoint {
     private String complaintSummaryTemplateLocalizationCode = "chatbot.template.pgrTrackComplaintSummary";
     private String noComplaintFoundMessage = "chatbot.message.noComplaintFoundMessage";
     private String messageWhenComplaintsExistsCode = "chatbot.message.trackend.exist";
-    private String pgrShowComplaintForStatusArray[] = {"PENDINGFORASSIGNMENT","PENDINGFORREASSIGNMENT","PENDINGATLME","REJECTED","RESOLVED"};
-
+    private String pgrShowComplaintForStatusArray[] = {"rejected", "resolved", "assigned", "open", "reassignrequested"};
     @Value("${egov.external.host}")
     private String egovExternalHost;
     @Value("${pgr.service.host}")
@@ -71,12 +69,10 @@ public class PGRComplaintTrack implements RestEndpoint {
         request.set("$.RequestInfo.authToken", authToken);
         request.set("$.RequestInfo.userInfo", userInfo.json());
 
-        URL baseUrl = new URL(pgrHost);
-        URL relativeUrl = new URL( baseUrl, pgrSearchComplaintPath);
-
-        UriComponentsBuilder uriComponents = UriComponentsBuilder.fromUriString(relativeUrl.toString());
-        uriComponents.queryParam("limit", numberOfRecentComplaints);
-        uriComponents.queryParam("applicationStatus", pgrShowComplaintForStatusArray);
+        UriComponentsBuilder uriComponents = UriComponentsBuilder.fromUriString(pgrHost + pgrSearchComplaintPath);
+        uriComponents.queryParam("tenantId", tenantId);
+        uriComponents.queryParam("noOfRecords", numberOfRecentComplaints);
+        uriComponents.queryParam("status", pgrShowComplaintForStatusArray);
         JsonNode requestObject = objectMapper.readTree(request.jsonString());
         ObjectNode responseMessage = objectMapper.createObjectNode();
         responseMessage.put("type", "text");
@@ -98,7 +94,7 @@ public class PGRComplaintTrack implements RestEndpoint {
 
             DocumentContext documentContext = JsonPath.parse(responseEntity.getBody().toString());
 
-            Integer numberOfServices = documentContext.read("$.ServiceWrappers.length()");
+            Integer numberOfServices = (Integer) ((JSONArray) documentContext.read("$..services.length()")).get(0);
 
             if (numberOfServices > 0) {
                 ObjectNode trackComplaintHeader = objectMapper.createObjectNode();
@@ -123,24 +119,24 @@ public class PGRComplaintTrack implements RestEndpoint {
 
                     ObjectNode params = objectMapper.createObjectNode();
 
-                    String complaintNumber = documentContext.read("$.ServiceWrappers.[" + i + "].service.serviceRequestId");
+                    String complaintNumber = documentContext.read("$.services.[" + i + "].serviceRequestId");
                     params.set("complaintNumber", objectMapper.valueToTree(numeralLocalization.getLocalizationCodesForStringContainingNumbers(complaintNumber)));
 
-                    String complaintCategory = documentContext.read("$.ServiceWrappers.[" + i + "].service.serviceCode");
+                    String complaintCategory = documentContext.read("$.services.[" + i + "].serviceCode");
                     param = objectMapper.createObjectNode();
                     param.put("code", complaintCategoryLocalizationPrefix + complaintCategory);
                     params.set("complaintCategory", param);
 
-                    Date createdDate = new Date((long) documentContext.read("$.ServiceWrappers.[" + i + "].service.auditDetails.createdTime"));
+                    Date createdDate = new Date((long) documentContext.read("$.services.[" + i + "].auditDetails.createdTime"));
                     String filedDate = getDateFromTimestamp(createdDate);
                     params.set("filedDate", objectMapper.valueToTree(numeralLocalization.getLocalizationCodesForStringContainingNumbers(filedDate)));
 
-                    String status = documentContext.read("$.ServiceWrappers.[" + i + "].service.applicationStatus");
+                    String status = documentContext.read("$.services.[" + i + "].status");
                     param = objectMapper.createObjectNode();
-                    param.put("code", pgrStatusLocalisationPrefix + status.toLowerCase());
+                    param.put("code", pgrStatusLocalisationPrefix + status);
                     params.set("status", param);
 
-                    String encodedPath = URLEncoder.encode(complaintNumber, "UTF-8");
+                    String encodedPath = URLEncoder.encode(documentContext.read("$.services.[" + i + "].serviceRequestId"), "UTF-8");
                     String url = egovExternalHost + "citizen/otpLogin?mobileNo=" + mobileNumber + "&redirectTo=complaint-details/" + encodedPath + "?source=whatsapp";
                     String encodedURL = urlShorteningService.shortenURL(url);
                     param = objectMapper.createObjectNode();

@@ -1,0 +1,20 @@
+name: symptoms
+nodeType: step
+type: text
+
+typeOfValues: FixedSetValues
+
+validationRequired: true
+
+multipleAnswers: true
+displayValuesAsOptions : true
+values: [ "home.isolation.symptom.fever", "home.isolation.symptom.dry.cough", "home.isolation.symptom.breathing.difficulty", "home.isolation.symptom.none" ]
+
+numberPrefixLocalizationCode: chatbot.message.numberPrefixLocalizationCode
+numberPostfixLocalizationCode: chatbot.message.numberPostfixLocalizationCode
+
+matchAnswerThreshold: 70
+
+message: chatbot.home.isolation.symptom
+
+errorMessage: chatbot.home.isolation.error.message

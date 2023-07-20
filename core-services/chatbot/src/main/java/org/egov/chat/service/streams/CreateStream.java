@@ -17,6 +17,7 @@ import org.egov.chat.service.ErrorMessageGenerator;
 import org.egov.chat.service.QuestionGenerator;
 import org.egov.chat.util.CommonAPIErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -41,9 +42,12 @@ public class CreateStream {
     @Autowired
     private CommonAPIErrorMessage commonAPIErrorMessage;
 
+    @Value("${consumer.group.id.prefix}")
+    private String consumerGroupIdPrefix;
+
     public void createQuestionStreamForConfig(JsonNode config, String questionTopic, String sendMessageTopic) {
 
-        String streamName = config.get("name").asText() + "-question";
+        String streamName = consumerGroupIdPrefix + config.get("name").asText() + "-question";
 
         Properties streamConfiguration = kafkaStreamsConfig.getDefaultStreamConfiguration();
         streamConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, streamName);
@@ -74,7 +78,7 @@ public class CreateStream {
 
                 return responseNodes;
             } catch (Exception e) {
-                log.error("error in create stream", e);
+                log.error("error in create stream" + e.getLocalizedMessage() + " for Node : " + config.get("name").asText());
                 commonAPIErrorMessage.resetFlowDuetoError(chatNode);
                 return Collections.emptyList();
             }

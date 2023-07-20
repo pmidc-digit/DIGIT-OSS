@@ -18,6 +18,7 @@ import org.egov.chat.pre.formatter.RequestFormatter;
 import org.egov.chat.util.FileStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -29,12 +30,19 @@ import java.util.Properties;
 public class ValueFirstRequestFormatter implements RequestFormatter {
 
     @Autowired
+    private KafkaTemplate<String, JsonNode> kafkaTemplate;
+    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private KafkaStreamsConfig kafkaStreamsConfig;
 
     @Value("${valuefirst.whatsapp.number}")
     private String valueFirstWAMobNo;
+
+    @Value("${home.isolation.missed.call.sms}")
+    private String missedCallSmsNotification;
+    @Value("${send.sms.topic}")
+    private String sendSmsNotificationTopic;
 
     @Autowired
     private FileStore fileStore;
@@ -68,11 +76,25 @@ public class ValueFirstRequestFormatter implements RequestFormatter {
         boolean missedCall = checkForMissedCallNotification(inputRequest);
         JsonNode chatNode = null;
         if (missedCall) {
-            chatNode = getMissedCallChatNode(inputRequest);
+            sendMissedCallSmsNotification(inputRequest);
+            return null;
+//            chatNode = getMissedCallChatNode(inputRequest);
         } else {
             chatNode = getUserMessageChatNode(inputRequest);
         }
         return chatNode;
+    }
+
+    public void sendMissedCallSmsNotification(JsonNode inputRequest) {
+        String inputMobile = getValueFromNode(inputRequest.at(ValueFirstPointerConstants.missedCallFromMobileNumber));
+        String mobileNumber = inputMobile.substring(2, 2 + 10);
+
+        ObjectNode smsRequest = objectMapper.createObjectNode();
+
+        smsRequest.put("mobileNumber", mobileNumber);
+        smsRequest.put("message", missedCallSmsNotification);
+
+        kafkaTemplate.send(sendSmsNotificationTopic, null, smsRequest);
     }
 
     public JsonNode getMissedCallChatNode(JsonNode inputRequest) {
@@ -131,6 +153,22 @@ public class ValueFirstRequestFormatter implements RequestFormatter {
         return chatNode;
     }
 
+    // TODO : set actual recipient number in input request not missed call number
+//    private JsonNode makeNodeForMissedCallRequest(JsonNode inputRequest) throws IOException {
+//        JsonNode body = inputRequest.get("body");
+//        String recipientNumber = body.get("Callernumber").asText();
+//        String userNumber = body.get("UserNumber").asText();
+//
+//        DocumentContext documentContext = JsonPath.parse("{\"channel\":\"WABA\",\"appDetails\":{\"type\":\"LIVE\"},\"events\":{\"eventType\":\"User initiated\",\"timestamp\":\"1561722407\",\"date\":\"2019-6-28\"},\"eventContent\":{\"message\":{\"from\":\"919428010077\",\"id\":\"ABEGkZQoAQB3Ago6kHmalneqdAmp\",\"text\":{\"body\":\"Hi\"},\"to\":\"919845315868\",\"contentType\":\"text\"}}}");
+//        documentContext.set("$.eventContent.message.to", recipientNumber);
+//        documentContext.set("$.eventContent.message.from", userNumber);
+//
+//        JsonNode inputRequestBody = objectMapper.readTree(documentContext.jsonString());
+//        ( (ObjectNode) inputRequest).set("body", inputRequestBody);
+//
+//        return inputRequest;
+//    }
+//
     private boolean checkForMissedCallNotification(JsonNode inputRequest) {
         if (!StringUtils.isEmpty(inputRequest.at(ValueFirstPointerConstants.missedCallToNumber).asText())) {
             return true;

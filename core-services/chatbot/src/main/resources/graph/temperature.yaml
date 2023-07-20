@@ -1,0 +1,16 @@
+name: temperature
+nodeType: step
+type: text
+
+message: chatbot.home.isolation.temperature
+
+validationRequired: true
+
+customValidator:
+  class: org.egov.chat.xternal.validator.RangeValidator
+  params:
+    min: 96
+    max: 106
+    rawInput: /message/rawInput
+
+errorMessage: chatbot.home.isolation.error.message

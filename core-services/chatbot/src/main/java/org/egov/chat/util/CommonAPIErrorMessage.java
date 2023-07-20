@@ -7,6 +7,7 @@ import org.egov.chat.models.EgovChat;
 import org.egov.chat.models.Response;
 import org.egov.chat.repository.ConversationStateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -23,10 +24,19 @@ public class CommonAPIErrorMessage {
     @Autowired
     private LocalizationService localizationService;
     private String commonApiErrorMessage = "chatbot.message.common.api.errormessage";
+
+    @Value("${topic.name.prefix}")
+    private String topicNamePrefix;
+
     private String localizedTopic = "send-message-localized";
 
-    private Response getErrorMessageResponse() {
-        String localizedErrorMessage = localizationService.getMessageForCode(commonApiErrorMessage);
+    private Response getErrorMessageResponse(String locale) {
+        String localizedErrorMessage;
+        if (locale != null) {
+            localizedErrorMessage = localizationService.getMessageForCode(commonApiErrorMessage, locale);
+        } else {
+            localizedErrorMessage = localizationService.getMessageForCode(commonApiErrorMessage);
+        }
         Response response = Response.builder().type("text").timestamp(System.currentTimeMillis()).nodeId("Error").text(localizedErrorMessage).build();
         return response;
     }
@@ -46,10 +56,10 @@ public class CommonAPIErrorMessage {
         try {
             if (chatNode.getConversationState() != null)
                 resetConversation(chatNode);
-            chatNode.setResponse(getErrorMessageResponse());
-            kafkaTemplate.send(localizedTopic, chatNode);
-        } catch (Exception ex) {
-            log.error("error occurred while sending user error response", ex);
+            chatNode.setResponse(getErrorMessageResponse(chatNode.getConversationState().getLocale()));
+            kafkaTemplate.send(topicNamePrefix + localizedTopic, chatNode);
+        } catch (Exception e) {
+            log.error("error occurred while sending user error response : " + e.getLocalizedMessage());
         }
     }
 }

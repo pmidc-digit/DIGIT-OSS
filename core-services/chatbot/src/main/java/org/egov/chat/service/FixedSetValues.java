@@ -121,6 +121,7 @@ public class FixedSetValues {
             List<String> answers = new ArrayList<>();
             List<Integer> indices = getMultipleAnswerIndices(answer);
             for(Integer index : indices) {
+                index -= 1;                     // Convert to 0 index
                 String value = "";
                 JsonNode answerLocalizationCode = validValues.get(index);
                 log.debug("answerLocalizationCode  : " + answerLocalizationCode);
@@ -138,7 +139,7 @@ public class FixedSetValues {
         } else if (displayValuesAsOptions && (answer.equalsIgnoreCase(nextKeyword) || answer.equalsIgnoreCase(nextKeywordSymbol))) {
             reQuestion = true;
         } else if (displayValuesAsOptions && checkIfAnswerIsIndex(answer)) {
-            answerIndex = Integer.parseInt(answer) - 1;
+            answerIndex = Integer.parseInt(answer.trim()) - 1;
         } else {
             Integer highestFuzzyScoreMatch = 0;
             answerIndex = 0;
@@ -179,7 +180,7 @@ public class FixedSetValues {
         String[] answers = answer.split(",");
         List<Integer> indices = new ArrayList<>();
         for(String string: answers) {
-            indices.add(Integer.parseInt(string));
+            indices.add(Integer.parseInt(string.trim()));
         }
         return indices;
     }
@@ -209,13 +210,19 @@ public class FixedSetValues {
             JsonNode questionDetails = conversationState.getQuestionDetails();
 
             ArrayNode allValues = (ArrayNode) questionDetails.get("allValues");
+            Integer offset = questionDetails.get("offset").asInt();
+            Integer batchSize = questionDetails.get("batchSize").asInt();
+            Integer upperLimit = Math.min(offset + batchSize, allValues.size());
+            ArrayNode validValues = objectMapper.createArrayNode();
+            for (int i = 0; i < upperLimit; i++) {
+                validValues.add(allValues.get(i));
+            }
 
             if (multipleAnswersAllowed && checkIfInputContainsMultipleChoices(answer)) {
-                ArrayNode validValues = getValidValuesForQuestionDetails(questionDetails);
                 List<Integer> indices = getMultipleAnswerIndices(answer);
                 boolean isValid = true;
                 for (Integer index : indices) {
-                    if (index < 0 || index >= validValues.size()) {
+                    if (index < 1 || index > validValues.size()) {      // 1-indexed
                         isValid = false;
                     }
                 }
@@ -225,8 +232,7 @@ public class FixedSetValues {
             if (displayValuesAsOptions && (answer.equalsIgnoreCase(nextKeyword) || answer.equalsIgnoreCase(nextKeywordSymbol))) {
                 return true;
             } else if (displayValuesAsOptions && checkIfAnswerIsIndex(answer)) {
-                ArrayNode validValues = getValidValuesForQuestionDetails(questionDetails);
-                Integer answerInteger = Integer.parseInt(answer);
+                Integer answerInteger = Integer.parseInt(answer.trim());
                 return answerInteger > 0 && answerInteger <= validValues.size();
             } else {
                 String locale = chatNode.getConversationState().getLocale();
@@ -235,21 +241,9 @@ public class FixedSetValues {
                 return fuzzyMatchAnswerWithValidValues(answer, localizedValidValues, config);
             }
         } catch (Exception e) {
-            log.error("Error when checking validity : ", e);
+            log.error("Error when checking validity : " + e.getLocalizedMessage() + " for Node : " + config.get("name").asText());
             return false;
         }
-    }
-
-    ArrayNode getValidValuesForQuestionDetails(JsonNode questionDetails) {
-        ArrayNode allValues = (ArrayNode) questionDetails.get("allValues");
-        Integer offset = questionDetails.get("offset").asInt();
-        Integer batchSize = questionDetails.get("batchSize").asInt();
-        Integer upperLimit = Math.min(offset + batchSize, allValues.size());
-        ArrayNode validValues = objectMapper.createArrayNode();
-        for (int i = 0; i < upperLimit; i++) {
-            validValues.add(allValues.get(i));
-        }
-        return validValues;
     }
 
     boolean fuzzyMatchAnswerWithValidValues(String answer, List<String> validValues, JsonNode config) {
