@@ -44,7 +44,6 @@ public class TransformConsumer implements KafkaConsumer {
 		try {
 			boolean isTransformed = false;
 			String dataContext = incomingData.get(Constants.DATA_CONTEXT).toString();
-			LOGGER.info("incomingData at TransformConsumer=="+incomingData.toString());
 			if(dataContext.equals(Constants.TransformationType.COLLECTION)) {
 
 				isTransformed = collectiontransformService.transformData(incomingData);
@@ -57,7 +56,6 @@ public class TransformConsumer implements KafkaConsumer {
 			}
 		} catch (final Exception e) {
 			LOGGER.error("Exception Encountered while processing the received message : " + e.getMessage());
-			e.printStackTrace();
 		}
 	}
 }

@@ -57,15 +57,15 @@ public class ElasticSearchRepository {
 		}
 		return false;
 	}
-
+	
 	public ResponseEntity<Map> fetchMDMSResponse(Object mdmsRequestObject) {
-
+		
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(Constants.CONTENT_TYPE, Constants.JSON);
-
+		
 		HttpEntity<Object> httpEntity = new HttpEntity<>(mdmsRequestObject, headers);
-		ResponseEntity<Map> result = restTemplate.exchange(Constants.MDMS_URL, HttpMethod.POST, httpEntity, Map.class);
-
+		ResponseEntity<Map> result  = restTemplate.exchange(Constants.MDMS_URL,  HttpMethod.POST, httpEntity, Map.class);
+		
 		return result;
 	}
-}
+	}

@@ -28,16 +28,12 @@ public class IngestConsumer{
 		try {
 			LOGGER.info("IngestConsumer ## get data ## " +data +" ## TOPIC ## "+topic);
 			IncomingData incomingData = ingestService.getContextForIncomingTopic(topic);
-			
-			LOGGER.info("## incomingData at IngestConsumer "+incomingData);
+			// LOGGER.info("## incomingData: "+incomingData);
 			incomingData.setDataObject(data.get("Data"));
 			//incomingData.setDataObject(data);
-			LOGGER.info("## incomingData at IngestConsumer "+incomingData);
-
 			ingestService.ingestToPipeline(incomingData);
 		} catch (final Exception e) {
 			LOGGER.error("Exception Encountered while processing the received message : " + e.getMessage());
-			e.printStackTrace();
 		}
 	}
 	

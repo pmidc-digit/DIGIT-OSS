@@ -41,7 +41,6 @@ public class UpdateConsumer {
     public void processMessage(Map data,
                                @Header(KafkaHeaders.RECEIVED_TOPIC) final String topic) {
         LOGGER.info("##KafkaMessageAlert## : key:" + topic + ":" + "value:" + data.size());
-        LOGGER.info("data at  UpdateConsumer: :"+data);
         try {
 
             String index =  data.get("_index").toString();
@@ -62,8 +61,7 @@ public class UpdateConsumer {
         	str.append(topic).append("Exception: ");
         	LOGGER.error(str.toString(), e);
             if(!esPushDirect)
-                ingestProducer.pushToPipeline(data, ERROR_INTENT, ERROR_INTENT);
-            LOGGER.error("Exception Encountered while processing the received message updating posted data for topic: "+ topic +"" + e.getMessage());
+                ingestProducer.pushToPipeline(data, ERROR_INTENT, null);
         }
     }
 
