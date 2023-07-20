@@ -51,20 +51,20 @@ public class NotificationConsumer {
 	
     @Autowired
     private ObjectMapper objectMapper;
-    
-    @Autowired
-    private ApplicationProperties config;
+
+	@Autowired
+	private ApplicationProperties config;
 		
 	@Autowired
 	private KafkaTemplate<String, Object> producer;
 	
 	@Autowired
 	private RestTemplate restTemplate;
-	
+
 	@Autowired
 	private ServiceRequestRepository serviceRequestRepository;
-	
-	
+
+
 	private static final String WS_LOCALIZATION_MODULE = "rainmaker-ws";
 	private static final String WS_CONNECTION_BILL_GENERATION = "WATER_CONNECTION_BILL_GENERATION_SMS_MESSAGE";
 	
@@ -180,37 +180,37 @@ public class NotificationConsumer {
 		 * System.out.println("content PT" + content); } }
 		 */
 
-				content = fetchContentFromLocalization(requestInfo, tenantId, WS_LOCALIZATION_MODULE,
-						"WATER_CONNECTION_BILL_GENERATION_SMS_MESSAGE");
-				if (!StringUtils.isEmpty(content)) {
-					Calendar cal = Calendar.getInstance();
-					log.info("detail.getExpiryDate()1 "+detail.getExpiryDate());
-					cal.setTimeInMillis(detail.getExpiryDate());
-					int month= cal.get(Calendar.MONTH)+1;
-					content = content.replace("<Due Date>", " " + cal.get(Calendar.DATE) + "/" + month
-							+ "/" + cal.get(Calendar.YEAR) + " ".toUpperCase());
-					content = content.replace("<Owner Name>", bill.getPayerName());
-					if(bill.getBusinessService().contains("WS")) {
-						content = content.replace("<Service>", "Water Charges");
-					}else {
-						content = content.replace("<Service>", "Sewerage Charges");
-					}
-					log.info("::append content ::" + content);
-					String actionLink = config.getSmsNotificationLink().
-							replace("$consumerCode", bill.getConsumerCode())
-							.replace("$tenantId", bill.getTenantId());
-					actionLink = config.getNotificationUrl() + actionLink;
-					actionLink = getShortnerURL(actionLink);
-					log.info("Action link "+actionLink);
-					content = content.replace("<Link to Bill>", actionLink);
-					
-					
-					content = content.replace("<bill amount>", bill.getTotalAmount().toString());
-					log.info("content WS" + content);
-				}
-		//	}
-			return content;
+		content = fetchContentFromLocalization(requestInfo, tenantId, WS_LOCALIZATION_MODULE,
+				"WATER_CONNECTION_BILL_GENERATION_SMS_MESSAGE");
+		if (!StringUtils.isEmpty(content)) {
+			Calendar cal = Calendar.getInstance();
+			log.info("detail.getExpiryDate()1 " + detail.getExpiryDate());
+			cal.setTimeInMillis(detail.getExpiryDate());
+			int month = cal.get(Calendar.MONTH) + 1;
+			content = content.replace("<Due Date>", " " + cal.get(Calendar.DATE) + "/" + month
+					+ "/" + cal.get(Calendar.YEAR) + " ".toUpperCase());
+			content = content.replace("<Owner Name>", bill.getPayerName());
+			if (bill.getBusinessService().contains("WS")) {
+				content = content.replace("<Service>", "Water Charges");
+			} else {
+				content = content.replace("<Service>", "Sewerage Charges");
+			}
+			log.info("::append content ::" + content);
+			String actionLink = config.getSmsNotificationLink().
+					replace("$consumerCode", bill.getConsumerCode())
+					.replace("$tenantId", bill.getTenantId());
+			actionLink = config.getNotificationUrl() + actionLink;
+			actionLink = getShortnerURL(actionLink);
+			log.info("Action link " + actionLink);
+			content = content.replace("<Link to Bill>", actionLink);
+
+
+			content = content.replace("<bill amount>", bill.getTotalAmount().toString());
+			log.info("content WS" + content);
 		}
+		//	}
+		return content;
+	}
 
 	public String getShortnerURL(String actualURL) {
 		net.minidev.json.JSONObject obj = new net.minidev.json.JSONObject();
