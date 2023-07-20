@@ -1,5 +1,6 @@
 package org.egov.demand.consumer.notification;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -8,9 +9,13 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.egov.common.contract.request.RequestInfo;
-import org.egov.demand.model.Bill;
+import org.egov.demand.config.ApplicationProperties;
 import org.egov.demand.model.BillDetail;
-import org.egov.demand.web.contract.BillRequest;
+import org.egov.demand.model.BillDetailV2;
+import org.egov.demand.model.BillV2;
+import org.egov.demand.repository.ServiceRequestRepository;
+import org.egov.demand.web.contract.BillRequestV2;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -46,12 +51,22 @@ public class NotificationConsumer {
 	
     @Autowired
     private ObjectMapper objectMapper;
+    
+    @Autowired
+    private ApplicationProperties config;
 		
 	@Autowired
 	private KafkaTemplate<String, Object> producer;
 	
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private ServiceRequestRepository serviceRequestRepository;
+	
+	
+	private static final String WS_LOCALIZATION_MODULE = "rainmaker-ws";
+	private static final String WS_CONNECTION_BILL_GENERATION = "WATER_CONNECTION_BILL_GENERATION_SMS_MESSAGE";
 	
     private static final String BILLING_LOCALIZATION_MODULE = "billing-services";
 	public static final String PAYMENT_MSG_LOCALIZATION_CODE = "BILLINGSERVICE_BUSINESSSERVICE_BILL_GEN_NOTIF_MSG";
@@ -87,7 +102,8 @@ public class NotificationConsumer {
 	public void listen(Map<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
 
 		try {
-			BillRequest req = objectMapper.convertValue(record, BillRequest.class);
+			log.info(" listen :: kafka.topics.billgen.topic.name "+topic );
+			BillRequestV2 req = objectMapper.convertValue(record, BillRequestV2.class);
 			sendNotification(req);
 		} catch (Exception e) {
 			log.error("Exception while reading from the queue: ", e);
@@ -100,23 +116,25 @@ public class NotificationConsumer {
 	 * @param billReq
 	 * @throws Exception 
 	 */
-	private void sendNotification(BillRequest billReq) {
+	private void sendNotification(BillRequestV2 billReq) {
 
 		billReq.getBills().forEach(bill -> {
-
+			if (bill.getMobileNumber() != null && bill.getTotalAmount().compareTo(BigDecimal.ZERO)>0 && (bill.getBusinessService().equalsIgnoreCase("WS")|| bill.getBusinessService().equalsIgnoreCase("SW"))) {
 			String phNo = bill.getMobileNumber();
 			String message = buildSmsBody(bill, billReq.getRequestInfo());
+			log.info("sendNotification :: phone:: "+phNo +" message "+message + "bill ::"+bill);
 			if (!StringUtils.isEmpty(message)) {
-
 				Map<String, Object> request = new HashMap<>();
 				request.put("mobileNumber", phNo);
 				request.put("message", message);
-				log.info("Msg sent to user : " + message);
 				producer.send(smsTopic, smsTopickey, request);
+				log.info("******Notification sent Successfully*******");
 			} else {
 				log.error("No message configured! Notification will not be sent.");
 			}
+			}
 		});
+		log.info("skipping sendNotification loop  end::"+billReq);
 	}
 
 	/**
@@ -128,35 +146,78 @@ public class NotificationConsumer {
 	 * @param requestInfo
 	 * @return
 	 */
-	private String buildSmsBody(Bill bill, RequestInfo requestInfo) {
+	private String buildSmsBody(BillV2 bill, RequestInfo requestInfo) {
 
-		BillDetail detail = bill.getBillDetails().get(0);
-
-		// notification is enabled only for PT 
-		if (bill.getMobileNumber() == null || !detail.getBusinessService().equals("PT"))
-			return null;
+		log.info("build Sms Body ::");
+		
+		BillDetailV2 detail = bill.getBillDetails().get(0);
 
 		String tenantId = bill.getTenantId();
+		String content = null;
 
-		String content = fetchContentFromLocalization(requestInfo, tenantId, BILLING_LOCALIZATION_MODULE,
-				PAYMENT_MSG_LOCALIZATION_CODE);
+		/*
+		 * if(detail.getBusinessService().equals("PT")) { content =
+		 * fetchContentFromLocalization(requestInfo, tenantId,
+		 * BILLING_LOCALIZATION_MODULE, PAYMENT_MSG_LOCALIZATION_CODE);
+		 * 
+		 * if (!StringUtils.isEmpty(content)) {
+		 * 
+		 * Calendar cal = Calendar.getInstance();
+		 * cal.setTimeInMillis(detail.getExpiryDate());
+		 * 
+		 * content = content.replace(USERNAME_REPLACE_STRING, bill.getPayerName());
+		 * content = content.replace(EXPIRY_DATE_REPLACE_STRING, " " +
+		 * cal.get(Calendar.DATE) + "/" + cal.get(Calendar.MONTH) + "/" +
+		 * cal.get(Calendar.YEAR) + " ".toUpperCase()); content =
+		 * content.replace(PERIOD_REPLACE_STRING, getPeriod(detail.getFromPeriod(),
+		 * detail.getToPeriod())); content =
+		 * content.replace(SERVICENUMBER_OF_MODULE_REPLACE_STRING,
+		 * detail.getConsumerCode().split(":")[0]); content =
+		 * content.replace(MODULE_REPLACE_STRING, MODULE_REPLACE_STRING_VALUE); content
+		 * = content.replace(MODULE_PRIMARYKEY_REPLACE_STRING,
+		 * MODULE_PRIMARYKEY_REPLACE_STRING_VALUE); content =
+		 * content.replace(TAX_REPLACE_STRING, detail.getTotalAmount().toString());
+		 * System.out.println("content PT" + content); } }
+		 */
 
-		if (!StringUtils.isEmpty(content)) {
-
-			Calendar cal = Calendar.getInstance();
-			cal.setTimeInMillis(detail.getExpiryDate());
-			
-			content = content.replace(USERNAME_REPLACE_STRING, bill.getPayerName());
-			content = content.replace(EXPIRY_DATE_REPLACE_STRING,
-					" "+ cal.get(Calendar.DATE) + "/" + cal.get(Calendar.MONTH) + "/" + cal.get(Calendar.YEAR)+ " ".toUpperCase());
-			content = content.replace(PERIOD_REPLACE_STRING, getPeriod(detail.getFromPeriod(), detail.getToPeriod()));
-			content = content.replace(SERVICENUMBER_OF_MODULE_REPLACE_STRING, detail.getConsumerCode().split(":")[0]);
-			content = content.replace(MODULE_REPLACE_STRING, MODULE_REPLACE_STRING_VALUE);
-			content = content.replace(MODULE_PRIMARYKEY_REPLACE_STRING, MODULE_PRIMARYKEY_REPLACE_STRING_VALUE);
-			content = content.replace(TAX_REPLACE_STRING, detail.getTotalAmount().toString());
-			
+				content = fetchContentFromLocalization(requestInfo, tenantId, WS_LOCALIZATION_MODULE,
+						"WATER_CONNECTION_BILL_GENERATION_SMS_MESSAGE");
+				if (!StringUtils.isEmpty(content)) {
+					Calendar cal = Calendar.getInstance();
+					log.info("detail.getExpiryDate()1 "+detail.getExpiryDate());
+					cal.setTimeInMillis(detail.getExpiryDate());
+					int month= cal.get(Calendar.MONTH)+1;
+					content = content.replace("<Due Date>", " " + cal.get(Calendar.DATE) + "/" + month
+							+ "/" + cal.get(Calendar.YEAR) + " ".toUpperCase());
+					content = content.replace("<Owner Name>", bill.getPayerName());
+					if(bill.getBusinessService().contains("WS")) {
+						content = content.replace("<Service>", "Water Charges");
+					}else {
+						content = content.replace("<Service>", "Sewerage Charges");
+					}
+					log.info("::append content ::" + content);
+					String actionLink = config.getSmsNotificationLink().
+							replace("$consumerCode", bill.getConsumerCode())
+							.replace("$tenantId", bill.getTenantId());
+					actionLink = config.getNotificationUrl() + actionLink;
+					actionLink = getShortnerURL(actionLink);
+					log.info("Action link "+actionLink);
+					content = content.replace("<Link to Bill>", actionLink);
+					
+					
+					content = content.replace("<bill amount>", bill.getTotalAmount().toString());
+					log.info("content WS" + content);
+				}
+		//	}
+			return content;
 		}
-		return content;
+
+	public String getShortnerURL(String actualURL) {
+		net.minidev.json.JSONObject obj = new net.minidev.json.JSONObject();
+		obj.put("url", actualURL);
+		String url = config.getShortenerHost() + config.getEgovShortenerUrl();
+		//Object response = serviceRequestRepository.getShorteningURL(new StringBuilder(url).toString(), obj);
+		return serviceRequestRepository.getShorteningURL(new StringBuilder(url), obj);
 	}
 
 	private String getPeriod(Long fromPeriod, Long toPeriod) {

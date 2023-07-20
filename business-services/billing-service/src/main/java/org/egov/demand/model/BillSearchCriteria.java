@@ -47,4 +47,11 @@ public class BillSearchCriteria {
 	private BillStatus status;
 	
 	private String mobileNumber;
+	
+	private Long periodFrom;
+	
+	private Long periodTo;
+	
+	@Default
+	private Boolean retrieveOldest = false;
 }
