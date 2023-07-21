@@ -60,7 +60,17 @@ var fontDescriptors = {
     bold: "src/fonts/Roboto-Bold.ttf",
     normal: "src/fonts/Roboto-Regular.ttf",
   },
+  BalooPaaji:{
+    normal: "src/fonts/BalooPaaji2-Regular.ttf",
+    bold: "src/fonts/BalooPaaji2-Bold.ttf"
+  }
 };
+
+var defaultFontMapping = {
+  en_IN: 'default',
+  hi_IN: 'default',
+  pn_IN: 'BalooPaaji'
+}
 
 const printer = new pdfMakePrinter(fontDescriptors);
 const uuidv4 = require("uuid/v4");
@@ -108,7 +118,7 @@ const createPdfBinary = async (
 ) => {
   try {
     let noOfDefinitions = listDocDefinition.length;
-
+    //logger.info("total output files: " + noOfDefinitions);
     var jobid = `${key}${new Date().getTime()}`;
     if (noOfDefinitions == 0) {
       logger.error("no file generated for pdf");
@@ -116,46 +126,48 @@ const createPdfBinary = async (
     } else {
       var dbInsertSingleRecords = [];
       var dbInsertBulkRecords = [];
-      await Promise.all([
+      // instead of awaiting the promise, use process.nextTick to asynchronously upload the receipt
+      //
+      process.nextTick(function () {
         uploadFiles(
-          dbInsertSingleRecords,
-          dbInsertBulkRecords,
-          formatconfig,
-          listDocDefinition,
-          key,
-          false,
-          jobid,
-          noOfDefinitions,
-          entityIds,
-          starttime,
-          successCallback,
-          errorCallback,
-          tenantId,
-          totalobjectcount,
-          userid,
-          documentType,
-          moduleName
-        ),
-        uploadFiles(
-          dbInsertSingleRecords,
-          dbInsertBulkRecords,
-          formatconfig,
-          listDocDefinition,
-          key,
-          true,
-          jobid,
-          noOfDefinitions,
-          entityIds,
-          starttime,
-          successCallback,
-          errorCallback,
-          tenantId,
-          totalobjectcount,
-          userid,
-          documentType,
-          moduleName
-        ),
-      ]);
+            dbInsertSingleRecords,
+            dbInsertBulkRecords,
+            formatconfig,
+            listDocDefinition,
+            key,
+            false,
+            jobid,
+            noOfDefinitions,
+            entityIds,
+            starttime,
+            successCallback,
+            errorCallback,
+            tenantId,
+            totalobjectcount,
+            userid,
+            documentType,
+            moduleName
+          ),
+          uploadFiles(
+            dbInsertSingleRecords,
+            dbInsertBulkRecords,
+            formatconfig,
+            listDocDefinition,
+            key,
+            true,
+            jobid,
+            noOfDefinitions,
+            entityIds,
+            starttime,
+            successCallback,
+            errorCallback,
+            tenantId,
+            totalobjectcount,
+            userid,
+            documentType,
+            moduleName
+          )
+      });
     }
   } catch (err) {
     logger.error(err.stack || err);
@@ -201,6 +213,7 @@ const uploadFiles = async (
     convertedListDocDefinition = [...listDocDefinition];
   }
 
+  logger.info("count :"+convertedListDocDefinition.length);
   convertedListDocDefinition.forEach(function (docDefinition, i) {
     // making copy because createPdfKitDocument function modifies passed object and this object is used
     // in multiple places
@@ -229,7 +242,10 @@ const uploadFiles = async (
       fileStoreAPICall(filename, tenantId, data)
         .then((result) => {
           listOfFilestoreIds.push(result);
+          logger.info("listOfFilestoreIds size :" + listOfFilestoreIds.length)
+
           if (!isconsolidated) {
+            logger.info("Not consolidated")
             dbInsertSingleRecords.push({
               jobid,
               id: uuidv4(),
@@ -293,10 +309,9 @@ const uploadFiles = async (
         .catch((err) => {
           logger.error(err.stack || err);
           errorCallback({
-            message:
-              "error occurred while uploading pdf: " + (typeof err === "string")
-                ? err
-                : err.message,
+            message: "error occurred while uploading pdf: " + (typeof err === "string") ?
+              err :
+              err.message,
           });
         });
     });
@@ -578,12 +593,13 @@ export const createAndSave = async (
   }
   //let key = get(req.query || req, "key");
   let tenantId = get(req.query || req, "tenantId");
-  var formatconfig = formatConfigMap[key];
+  var formatconfigNew = formatConfigMap[key];
   var dataconfig = dataConfigMap[key];
   var userid = get(req.body || req, "RequestInfo.userInfo.id");
   var requestInfo = get(req.body || req, "RequestInfo");
   var documentType = get(dataconfig, "documentType", "");
   var moduleName = get(dataconfig, "DataConfigs.moduleName", "");
+  var formatconfig =JSON.parse(JSON.stringify(formatconfigNew))
 
   var valid = validateRequest(req, res, key, tenantId, requestInfo);
   if (valid) {
@@ -603,6 +619,15 @@ export const createAndSave = async (
     // var util = require('util');
     // fs.writeFileSync('./data.txt', util.inspect(JSON.stringify(formatconfig)) , 'utf-8');
     //function to download pdf automatically
+    let locale = requestInfo.msgId.split('|')[1];
+    if(!locale)
+      locale = envVariables.DEFAULT_LOCALISATION_LOCALE;
+
+    if(defaultFontMapping[locale] != 'default'){
+      formatconfig.defaultStyle.font = defaultFontMapping[locale];
+    }
+    console.log(" Font type selected :::: " + formatconfig.defaultStyle.font);
+    console.log("Locale passed:::::::"+locale);
     createPdfBinary(
       key,
       formatConfigByFile,
@@ -619,10 +644,9 @@ export const createAndSave = async (
     ).catch((err) => {
       logger.error(err.stack || err);
       errorCallback({
-        message:
-          "error occurred in createPdfBinary call: " + (typeof err === "string")
-            ? err
-            : err.message,
+        message: "error occurred in createPdfBinary call: " + (typeof err === "string") ?
+          err :
+          err.message,
       });
     });
   }
@@ -837,8 +861,10 @@ const prepareBulk = async (
   );
   if (Array.isArray(moduleObjectsArray) && moduleObjectsArray.length > 0) {
     totalobjectcount = moduleObjectsArray.length;
+    logger.info("No of input objects: " + totalobjectcount);
     for (var i = 0, len = moduleObjectsArray.length; i < len; i++) {
       let moduleObject = moduleObjectsArray[i];
+      //logger.info("Preparing pdf data for input data with id: " + moduleObject.id)
       let entityKey = getValue(
         jp.query(moduleObject, entityIdPath),
         [null],
@@ -874,6 +900,12 @@ const prepareBulk = async (
         i + 1 == len
       ) {
         let formatconfigCopy = JSON.parse(JSON.stringify(formatconfig));
+        let locale = requestInfo.msgId.split('|')[1];
+        if(!locale)
+          locale = envVariables.DEFAULT_LOCALISATION_LOCALE;
+        if(defaultFontMapping[locale] != 'default'){
+          formatconfigCopy.defaultStyle.font = defaultFontMapping[locale];
+        }
         formatconfigCopy["content"] = formatObjectArrayObject;
         formatConfigByFile.push(formatconfigCopy);
         formatObjectArrayObject = [];

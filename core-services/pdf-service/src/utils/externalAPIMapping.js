@@ -49,6 +49,10 @@ export const externalAPIMapping = async function(
       val: ""
     };
   });
+
+  var responses = [];
+  var responsePromises = [];
+
   for (let i = 0; i < externalAPIArray.length; i++) {
     var temp1 = "";
     var temp2 = "";
@@ -158,22 +162,29 @@ export const externalAPIMapping = async function(
       "content-type": "application/json;charset=UTF-8",
       accept: "application/json, text/plain, */*"
     };
-    var res;
+
+    var resPromise;
     if (externalAPIArray[i].requesttype == "POST") {
-      res = await httpRequest(
+      resPromise = axios.post(
         externalAPIArray[i].uri + "?" + externalAPIArray[i].queryParams,
-        { RequestInfo: requestInfo },
-        headers
+        { RequestInfo: requestInfo }, {
+          headers: headers
+        }
       );
     } else {
-      var apires = await axios.get(
-        externalAPIArray[i].uri + "?" + externalAPIArray[i].queryParams,
-        {
+      resPromise = axios.get(
+        externalAPIArray[i].uri + "?" + externalAPIArray[i].queryParams, {
           responseType: "application/json"
         }
       );
-      res = apires.data;
     }
+    responsePromises.push(resPromise)
+  }
+
+  responses = await Promise.all(responsePromises)
+  for (let i = 0; i < externalAPIArray.length; i++) {
+    var res = responses[i].data
+
     //putting required data from external API call in format config
 
     for (let j = 0; j < externalAPIArray[i].jPath.length; j++) {
