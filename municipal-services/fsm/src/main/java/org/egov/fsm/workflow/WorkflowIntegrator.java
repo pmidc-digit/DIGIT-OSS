@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.egov.fsm.config.FSMConfiguration;
 import org.egov.fsm.util.FSMConstants;
 import org.egov.fsm.util.FSMErrorConstants;
@@ -48,7 +50,7 @@ public class WorkflowIntegrator {
 	private static final String ASSIGNEEKEY = "assignes";
 
 	private static final String MODULENAMEVALUE = "fsm";
-	
+
 	private static final String UUIDKEY = "uuid";
 
 	private static final String WORKFLOWREQUESTARRAYKEY = "ProcessInstances";
@@ -87,12 +89,27 @@ public class WorkflowIntegrator {
 		JSONObject obj = new JSONObject();
 		obj.put(BUSINESSIDKEY, fsm.getApplicationNo());
 		obj.put(TENANTIDKEY, wfTenantId);
-		obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_BusinessService);
+
+		Double tripAmount = getAdditionalDetails(fsm.getAdditionalDetails());
+
+		if (FSMConstants.FSM_PAYMENT_PREFERENCE_POST_PAY.equalsIgnoreCase(fsmRequest.getFsm().getPaymentPreference())) {
+			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_POST_PAY_BUSINESSSERVICE);
+		} else if (FSMConstants.FSM_PAYMENT_PREFERENCE_PRE_PAY
+				.equalsIgnoreCase(fsmRequest.getFsm().getPaymentPreference())) {
+			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_BUSINESSSERVICE);
+		} else if (fsm.getAdvanceAmount() == null && fsm.getPaymentPreference() == null	&& tripAmount <= 0) {
+			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_ZERO_PRICE_SERVICE);
+		} else if (fsm.getAdvanceAmount() != null && fsm.getAdvanceAmount().intValue() > 0) {
+			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_ADVANCE_PAY_BUSINESSSERVICE);
+		} else {
+			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_LATER_PAY_SERVICE);
+		}
+
 		obj.put(MODULENAMEKEY, MODULENAMEVALUE);
 		obj.put(ACTIONKEY, fsmRequest.getWorkflow().getAction());
 		obj.put(COMMENTKEY, fsmRequest.getWorkflow().getComments());
 		obj.put(RATING, fsmRequest.getWorkflow().getRating());
-		
+
 		if (!CollectionUtils.isEmpty(fsmRequest.getWorkflow().getAssignes())) {
 			List<Map<String, String>> uuidmaps = new LinkedList<>();
 			fsmRequest.getWorkflow().getAssignes().forEach(assignee -> {
@@ -102,7 +119,7 @@ public class WorkflowIntegrator {
 			});
 			obj.put(ASSIGNEEKEY, uuidmaps);
 		}
-		
+
 		obj.put(DOCUMENTSKEY, fsmRequest.getWorkflow().getVerificationDocuments());
 		array.add(obj);
 		JSONObject workFlowRequest = new JSONObject();
@@ -134,8 +151,8 @@ public class WorkflowIntegrator {
 		}
 
 		/*
-		 * on success result from work-flow read the data and set the status
-		 * back to fsm object
+		 * on success result from work-flow read the data and set the status back to fsm
+		 * object
 		 */
 		DocumentContext responseContext = JsonPath.parse(response);
 		List<Map<String, Object>> responseArray = responseContext.read(PROCESSINSTANCESJOSNKEY);
@@ -149,4 +166,31 @@ public class WorkflowIntegrator {
 		fsm.setApplicationStatus(idStatusMap.get(fsm.getApplicationNo()));
 
 	}
+
+	/**
+	 * Method to return additionalDetails as a Map
+	 *
+	 * @param additionalDetails
+	 */
+	public Double getAdditionalDetails(Object additionalDetails) {
+
+		ObjectMapper mapper = new ObjectMapper();
+		Object additionalDetailsObject = new Object();
+
+		if(additionalDetails instanceof ObjectNode)
+			additionalDetailsObject = mapper.convertValue(additionalDetails, Object.class);
+		else
+			additionalDetailsObject = additionalDetails;
+
+		Map<String, String> fsmAdditionalDetails = additionalDetailsObject != null
+				? (Map<String, String>) additionalDetailsObject : new HashMap<>();
+
+		Double tripAmount = Double.valueOf(0.0);
+
+		if (fsmAdditionalDetails != null && fsmAdditionalDetails.get("tripAmount") != null)
+			tripAmount = Double.valueOf(String.valueOf(fsmAdditionalDetails.get("tripAmount")));
+
+		return tripAmount;
+	}
+
 }
