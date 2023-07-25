@@ -1,7 +1,9 @@
-package org.egov.vendor.web.model;
+package org.egov.vendor.driver.web.model;
 
 import java.util.List;
 
+import org.egov.vendor.web.model.VendorSearchCriteria.SortBy;
+import org.egov.vendor.web.model.VendorSearchCriteria.SortOrder;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,7 +19,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class VendorSearchCriteria {
+public class DriverSearchCriteria {
+
 	@JsonProperty("offset")
 	private Integer offset;
 
@@ -30,32 +33,23 @@ public class VendorSearchCriteria {
 	@JsonProperty("mobileNumber")
 	private String mobileNumber;
 
-	@JsonProperty("vehicleType")
-	private String vehicleType;
-
 	@JsonProperty("ownerIds")
 	private List<String> ownerIds;
-
-	@JsonProperty("vehicleRegistrationNumber")
-	private List<String> vehicleRegistrationNumber;
-
-	@JsonProperty("vehicleIds")
-	private List<String> vehicleIds;
 
 	@JsonProperty("name")
 	private List<String> name;
 
+	@JsonProperty("dsoName")
+	private List<String> dsoName;
+
 	@JsonProperty("ids")
 	private List<String> ids;
-
-	@JsonProperty("vehicleCapacity")
-	private String vehicleCapacity;
 
 	@JsonProperty("status")
 	private List<String> status;
 
-	@JsonProperty("driverIds")
-	private List<String> driverIds;
+	@JsonProperty("driverWithNoVendor")
+	private boolean driverWithNoVendor;
 
 	@JsonProperty("sortBy")
 	private SortBy sortBy;
@@ -68,23 +62,21 @@ public class VendorSearchCriteria {
 	}
 
 	public enum SortBy {
-		tenantId, mobileNumber, vehicleType, ownerIds, vehicleRegistrationNumber, vehicleIds, name, ids,
-		vehicleCapacity, status, driverIds, createdTime,vendor_createdTime
+		tenantId, mobileNumber, ownerIds, name, dsoName, ids, status, driverWithNoVendor, createdTime
+
 	}
 
 	public boolean isEmpty() {
+
 		return (this.tenantId == null && this.offset == null && this.limit == null && this.mobileNumber == null
-				&& CollectionUtils.isEmpty(this.vehicleRegistrationNumber) && this.ownerIds == null
-				&& CollectionUtils.isEmpty(this.name) && CollectionUtils.isEmpty(this.vehicleIds)
-				&& CollectionUtils.isEmpty(this.ids) && this.vehicleType == null && this.vehicleCapacity == null
+				&& this.ownerIds == null && CollectionUtils.isEmpty(this.name) && CollectionUtils.isEmpty(this.ids)
 				&& CollectionUtils.isEmpty(this.status));
 	}
 
 	public boolean tenantIdOnly() {
 		return (this.tenantId != null && this.mobileNumber == null && this.ownerIds == null
-				&& CollectionUtils.isEmpty(this.vehicleRegistrationNumber) && CollectionUtils.isEmpty(this.vehicleIds)
-				&& CollectionUtils.isEmpty(this.name) && CollectionUtils.isEmpty(this.ids) && this.vehicleType == null
-				&& this.vehicleCapacity == null && CollectionUtils.isEmpty(this.status));
+				&& CollectionUtils.isEmpty(this.name) && CollectionUtils.isEmpty(this.ids)
+				&& CollectionUtils.isEmpty(this.status));
 	}
 
 }
