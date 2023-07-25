@@ -1,6 +1,5 @@
 package org.egov.vehicle.trip.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -25,50 +24,58 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/trip/v1")
 public class VehicleTripController {
-	
+
 	@Autowired
 	private ResponseInfoFactory responseInfoFactory;
-	
+
 	@Autowired
 	private VehicleUtil vehicleLogUtil;
-	
+
 	@Autowired
 	private VehicleTripService vehicleTripService;
-	
+
 	@PostMapping(value = "/_create")
 	public ResponseEntity<VehicleTripResponse> create(@Valid @RequestBody VehicleTripRequest request) {
-		
+
 		vehicleLogUtil.defaultJsonPathConfig();
-		VehicleTrip vehicleLog = vehicleTripService.create(request);
-		List<VehicleTrip> vehicleLogList = new ArrayList<VehicleTrip>();
-		vehicleLogList.add(vehicleLog);
-		VehicleTripResponse response = VehicleTripResponse.builder().vehicleTrip(vehicleLogList)				
+		List<VehicleTrip> vehicleLog = vehicleTripService.create(request);
+		VehicleTripResponse response = VehicleTripResponse.builder().vehicleTrip(vehicleLog)
 				.responseInfo(responseInfoFactory.createResponseInfoFromRequestInfo(request.getRequestInfo(), true))
 				.build();
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
+
 	@PostMapping(value = "/_update")
 	public ResponseEntity<VehicleTripResponse> update(@Valid @RequestBody VehicleTripRequest request) {
-		
+
 		vehicleLogUtil.defaultJsonPathConfig();
-		VehicleTrip vehicleLog = vehicleTripService.update(request);
-		List<VehicleTrip> vehicleLogList = new ArrayList<VehicleTrip>();
-		vehicleLogList.add(vehicleLog);
-		VehicleTripResponse response = VehicleTripResponse.builder().vehicleTrip(vehicleLogList)				
+		List<VehicleTrip> vehicleLog = vehicleTripService.update(request);
+
+		VehicleTripResponse response = VehicleTripResponse.builder().vehicleTrip(vehicleLog)
 				.responseInfo(responseInfoFactory.createResponseInfoFromRequestInfo(request.getRequestInfo(), true))
 				.build();
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
+
 	@PostMapping(value = "/_search")
 	public ResponseEntity<VehicleTripResponse> search(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
 			@Valid @ModelAttribute VehicleTripSearchCriteria criteria) {
-		
+
 		VehicleTripResponse response = vehicleTripService.search(criteria, requestInfoWrapper.getRequestInfo());
-		
+
 		response.setResponseInfo(
 				responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true));
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@PostMapping(value = "/_plainsearch")
+	public ResponseEntity<VehicleTripResponse> plainsearch(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
+			@Valid @ModelAttribute VehicleTripSearchCriteria criteria) {
+		List<VehicleTrip> vehicleLogList = vehicleTripService.vehicleTripPlainSearch(criteria,
+				requestInfoWrapper.getRequestInfo());
+		VehicleTripResponse response = VehicleTripResponse.builder().vehicleTrip(vehicleLogList).responseInfo(
+				responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true))
+				.build();
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

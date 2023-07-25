@@ -187,16 +187,6 @@
                         {
                             "tenantId": "pb",
                             "currentState": "DSO_INPROGRESS",
-                            "action": "DECLINE",
-                            "nextState": "ASSING_DSO",
-                            "roles": [
-                                "FSM_DSO",
-                                "FSM_EDITOR_EMP"
-                            ]
-                        },
-                        {
-                            "tenantId": "pb",
-                            "currentState": "DSO_INPROGRESS",
                             "action": "COMPLETED",
                             "nextState": "CITIZEN_FEEDBACK_PENDING",
                             "roles": [
@@ -240,7 +230,8 @@
                             "action": "DSO_REJECT",
                             "nextState": "DSO_REJECTED",
                             "roles": [
-                                "FSM_DSO"
+                                "FSM_DSO",
+                                "FSM_EDITOR_EMP"
                             ]
                         },
                         {
@@ -249,7 +240,8 @@
                             "action": "DSO_ACCEPT",
                             "nextState": "DSO_INPROGRESS",
                             "roles": [
-                                "FSM_DSO"
+                                "FSM_DSO",
+                                "FSM_EDITOR_EMP"
                             ]
                         },
                         {

@@ -6,9 +6,11 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
+import org.egov.vendor.driver.web.model.Driver;
 import org.egov.vendor.web.model.location.Address;
 import org.egov.vendor.web.model.user.User;
 import org.egov.vendor.web.model.vehicle.Vehicle;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -35,14 +37,17 @@ import lombok.Setter;
 @Setter
 public class Vendor {
 
+	@SafeHtml
 	@JsonProperty("id")
 	private String id = null;
 
 	@JsonProperty("tenantId")
+	@SafeHtml
 	@Size(max=64)
 	private String tenantId = null;
 
 	@JsonProperty("name")
+	@SafeHtml
 	@Size(max=128)
 	private String name = null;
 
@@ -59,28 +64,42 @@ public class Vendor {
 
 	@JsonProperty("drivers")
 	@Valid
-	private List<User> drivers = null;
+	private List<Driver> drivers = null;
 
 	@JsonProperty("additionalDetails")
 	private Object additionalDetails = null;
 
+	@SafeHtml
 	@JsonProperty("source")
 	private String source = null;
 
+	@SafeHtml
 	@JsonProperty("description")
 	private String description = null;
 	
 	@JsonProperty("ownerId")
+	@SafeHtml
 	@Size(max=64)
 	private String ownerId = null;
 
+	@JsonProperty("agencyType")
+	@SafeHtml
+	@Size(max=128)
+	private String agencyType = null;
+	
+	@JsonProperty("paymentPreference")
+	@SafeHtml
+	@Size(max=128)
+	private String paymentPreference = null;
+	
+		
 	/**
 	 * Inactive records will be consider as soft deleted
 	 */
 	public enum StatusEnum {
 		ACTIVE("ACTIVE"),
-
-		INACTIVE("INACTIVE");
+		INACTIVE("INACTIVE"),
+		DISABLED("DISABLED");
 
 		private String value;
 

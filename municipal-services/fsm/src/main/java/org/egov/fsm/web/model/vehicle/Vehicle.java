@@ -2,6 +2,7 @@ package org.egov.fsm.web.model.vehicle;
 
 import org.egov.fsm.web.model.AuditDetails;
 import org.egov.fsm.web.model.user.User;
+import org.hibernate.validator.constraints.SafeHtml;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -28,30 +29,35 @@ import lombok.ToString;
 @Builder
 public class Vehicle {
 
+    @SafeHtml
     @JsonProperty("id")
-    private String id = null;
+    private String id;
 
+    @SafeHtml
     @JsonProperty("tenantId")
-    private String tenantId = null;
+    private String tenantId;
 
     @NonNull
+    @SafeHtml
     @JsonProperty("registrationNumber")
-    private String registrationNumber  = null;
+    private String registrationNumber;
 
     @NonNull
+    @SafeHtml
     @JsonProperty("model")
-    private String model = null;
+    private String model;
 
     @NonNull
+    @SafeHtml
     @JsonProperty("type")
-    private String type = null;
+    private String type;
 
+    @JsonProperty("tankCapacity")
+    private Double tankCapacity;
 
-    @JsonProperty("tankCapicity")
-    private Double tankCapicity;
-    
+    @SafeHtml
     @JsonProperty("suctionType")
-    private String suctionType = null;
+    private String suctionType;
 
     @JsonProperty("pollutionCertiValidTill")
     private Long pollutionCertiValidTill;
@@ -63,19 +69,21 @@ public class Vehicle {
     private Long fitnessValidTill;
 
     @JsonProperty("roadTaxPaidTill")
-    private Long  roadTaxPaidTill;
+    private Long roadTaxPaidTill;
 
     @JsonProperty("gpsEnabled")
     private boolean gpsEnabled;
 
     @JsonProperty("additionalDetails")
-    private Object additionalDetails = null;
+    private Object additionalDetails;
 
+    @SafeHtml
     @JsonProperty("source")
-    private String source = null;
-    
+    private String source;
+
+    @SafeHtml
     @JsonProperty("ownerId")
-    private String ownerId = null;
+    private String ownerId;
 
     public enum StatusEnum {
         ACTIVE("ACTIVE"),
@@ -88,33 +96,30 @@ public class Vehicle {
             this.value = value;
         }
 
-    @Override
-    @JsonValue
-    public String toString() {
-        return String.valueOf(value);
+        @Override
+        @JsonValue
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        @JsonCreator
+        public static StatusEnum fromValue(String text) {
+            for (StatusEnum b : StatusEnum.values()) {
+                if (String.valueOf(b.value).equals(text)) {
+                    return b;
+                }
+            }
+            return null;
+        }
     }
 
-    @JsonCreator
-    public static StatusEnum fromValue(String text) {
-        for (StatusEnum b : StatusEnum.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
-            }
-        }
-        return null;
-    }
-}
     @JsonProperty("status")
-    private StatusEnum status = null;
+    private StatusEnum status;
 
     @JsonProperty("owner")
-    private User owner = null;
+    private User owner;
 
     @JsonProperty("auditDetails")
-    private AuditDetails auditDetails = null;
-
-    
+    private AuditDetails auditDetails;
 
 }
-
-
