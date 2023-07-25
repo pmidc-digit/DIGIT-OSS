@@ -2,6 +2,7 @@ package org.egov.fsm.web.model.location;
 
 import java.util.Objects;
 
+import org.hibernate.validator.constraints.SafeHtml;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,16 +21,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GeoLocation   {
-	  @JsonProperty("id")
-	  private String id = null;	
+
+  @SafeHtml
+  @JsonProperty("id")
+  private String id ;
+
   @JsonProperty("latitude")
-  private Double latitude = null;
+  private Double latitude ;
 
   @JsonProperty("longitude")
-  private Double longitude = null;
+  private Double longitude ;
 
   @JsonProperty("additionalDetails")
-  private Object additionalDetails = null;
+  private Object additionalDetails ;
 
   public GeoLocation id(String id) {
     this.id = id;

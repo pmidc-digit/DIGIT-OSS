@@ -309,8 +309,10 @@ public class FSMValidator {
 
 		// SAN-889: Added validation for recevied payment
 		
-		/*SM-2099 :Removed validation for received payment
-		 * 
+		// #SM-2099 removed validation for received payment type
+
+		
+		/*
 		 * if (null != fsmRequest.getWorkflow() && null !=
 		 * fsmRequest.getWorkflow().getAction() &&
 		 * fsmRequest.getWorkflow().getAction().equalsIgnoreCase(FSMConstants.
