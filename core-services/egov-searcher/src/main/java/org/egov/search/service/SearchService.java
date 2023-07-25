@@ -119,4 +119,9 @@ public class SearchService {
 		return documentContext.jsonString().toString();
 		
 	}
+
+	public Integer getUniqueCitezen(String date) {
+		return searchRepository.getUniqueCitizenCount(date);
+
+	}
 }
