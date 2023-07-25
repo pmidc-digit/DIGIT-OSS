@@ -1,5 +1,6 @@
 package org.egov.vehicle.web.model;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import org.egov.vehicle.web.model.user.User;
@@ -8,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.hibernate.validator.constraints.SafeHtml;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,24 +31,28 @@ import lombok.ToString;
 @Builder
 public class Vehicle {
 
+    @SafeHtml
     @JsonProperty("id")
     private String id = null;
 
 	@Size(max=64)
+    @SafeHtml
     @JsonProperty("tenantId")
     private String tenantId = null;
 
     @NonNull
+    @SafeHtml
 	@Size(max=64)
     @JsonProperty("registrationNumber")
     private String registrationNumber  = null;
 
-    @NonNull
+    @SafeHtml
 	@Size(max=64)
     @JsonProperty("model")
     private String model = null;
 
     @NonNull
+    @SafeHtml
 	@Size(max=64)
     @JsonProperty("type")
     private String type = null;
@@ -55,8 +61,13 @@ public class Vehicle {
     @JsonProperty("tankCapacity")
     private Double tankCapacity;
     
+    @SafeHtml
     @JsonProperty("suctionType")
     private String suctionType = null;
+    
+    @SafeHtml
+    @JsonProperty("vehicleOwner")
+    private String vehicleOwner = null;
 
     @JsonProperty("pollutionCertiValidTill")
     private Long pollutionCertiValidTill;
@@ -76,17 +87,18 @@ public class Vehicle {
     @JsonProperty("additionalDetails")
     private Object additionalDetails = null;
 
+    @SafeHtml
     @JsonProperty("source")
     private String source = null;
-    
+
+    @SafeHtml
     @JsonProperty("ownerId")
-    private String ownerId = null;
+    private String ownerId = null; 
 
     public enum StatusEnum {
         ACTIVE("ACTIVE"),
-
-        INACTIVE("INACTIVE");
-
+        INACTIVE("INACTIVE"),
+    	DISABLED("DISABLED");
         private String value;
 
         StatusEnum(String value) {
@@ -113,6 +125,7 @@ public class Vehicle {
     private StatusEnum status = null;
 
     @JsonProperty("owner")
+    @Valid
     private User owner = null;
 
     @JsonProperty("auditDetails")
