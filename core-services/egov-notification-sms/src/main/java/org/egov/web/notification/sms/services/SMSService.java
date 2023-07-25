@@ -1,4 +1,4 @@
-package org.egov.web.notification.sms.service;
+package org.egov.web.notification.sms.services;
 
 import org.egov.web.notification.sms.models.Sms;
 
