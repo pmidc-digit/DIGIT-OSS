@@ -3,55 +3,22 @@ package org.egov.web.notification.sms;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.*;
 import org.egov.tracer.config.TracerConfiguration;
-import org.egov.web.notification.sms.config.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.boot.*;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.event.*;
-import org.springframework.context.*;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.env.*;
-import org.springframework.kafka.annotation.*;
-import org.springframework.util.*;
-import org.springframework.web.client.RestTemplate;
-
-import javax.annotation.*;
 
 @SpringBootApplication
+@Configuration
 @Import(TracerConfiguration.class)
-@Slf4j
-@EnableKafka
 public class EgovNotificationSmsApplication {
 
-    @Autowired
-    private ApplicationContext context;
+	public static void main(String[] args) {
+		SpringApplication.run(EgovNotificationSmsApplication.class, args);
+	}
 
-    @Autowired
-    private Environment environment;
-
-    public static void main(String[] args) {
-        SpringApplication.run(EgovNotificationSmsApplication.class, args);
-    }
-
-    @PostConstruct
-    private void init() {
-        if (StringUtils.isEmpty(environment.getProperty("sms.provider.class"))) {
-            log.error("The provider gateway has not been configured. Please configure sms.provider.class");
-            int exitCode = SpringApplication.exit(context, (ExitCodeGenerator) () -> 1);
-            System.exit(exitCode);
-        }
-    }
-
-    @Primary
-    @Bean
-    public RestTemplate getRestTemplate() {
-        return new RestTemplate();
-    }
-    
     @Bean
     public ObjectMapper objectMapper(){
         return new ObjectMapper()
