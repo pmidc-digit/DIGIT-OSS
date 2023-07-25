@@ -43,7 +43,8 @@ public class CollectionTransformationService implements TransformService {
 
     @Override
     public Boolean transformData(Map incomingData) {
-
+   
+//    	LOGGER.info("incomingData at transformData :## "+incomingData.toString());
         Map incomingDataCopy = new HashMap<>();
         incomingDataCopy.putAll(incomingData);
         incomingData.clear();
@@ -56,13 +57,14 @@ public class CollectionTransformationService implements TransformService {
         try {
 
             JsonNode incomingNode = mapper.convertValue(incomingDataCopy, JsonNode.class);
-            //LOGGER.info("incoming data: "+incomingNode);
+            LOGGER.info("incoming data: "+incomingNode);
             //JsonNode identifier = incomingNode.get(Constants.DATA_OBJECT).get(TRANSACTION_ID);
 
 
             //To change: for loading the file from config root
             String trsFile = OBJECTIVE.concat(SEPARATOR).concat(dataContext).concat(SEPARATOR).concat(dataContextVersion).concat(JSON_EXTENSION);
             String strFile = configLoader.get(trsFile);
+//          LOGGER.info("strFile:## "+strFile);
             JsonNode specNode = mapper.readTree(strFile);
             // LOGGER.info("specNode:## "+specNode);
 
@@ -79,16 +81,23 @@ public class CollectionTransformationService implements TransformService {
 
             //String sourceUrl = (OBJECTIVE.concat(SEPARATOR).concat(dataContext).concat(SEPARATOR).concat(dataContextVersion).concat(JSON_EXTENSION));
             //JsonNode specNode = mapper.readTree(configLoader.get(sourceUrl));
+            JsonNode specData = specNode.findPath(JOLT_SPEC);
+            LOGGER.info("specData## " + specData);
 
             String previousField = findParentKey(specNode.findPath(JOLT_SPEC), "$i", "");
+//          LOGGER.info("previousField## " + previousField);
             int parentNodeSize = incomingNode.findValues(previousField).get(0).size();
+//          LOGGER.info("parentNodeSize## " + parentNodeSize);
 
             for(int i=0; (i<parentNodeSize); i++){
                 previousField = findParentKey(specNode.findPath(JOLT_SPEC), "$j", "");
                 ArrayNode nestedNodes = (ArrayNode)incomingNode.findValues(previousField).get(i);
+//              LOGGER.info("Parent incomingNode :"+incomingNode.toString());
+//              LOGGER.info(" ArrayNode nestedNodes## " +   nestedNodes.toString());
 
                 for(int j=0; j< nestedNodes.size(); j++){
                     JsonNode idNode = nestedNodes.get(j).get(ID);
+                    
                     String spec = specNode.toString();
                     spec = spec.replace("$i", i+"");
                     spec = spec.replace("$j", j+"");
@@ -98,14 +107,15 @@ public class CollectionTransformationService implements TransformService {
                     chainrSpecJSON = JsonUtils.jsonToList(stream);
                     Chainr chainr = Chainr.fromSpec( chainrSpecJSON );
                     Object inputJSON = incomingDataCopy.get(Constants.DATA_OBJECT);
-
-                    try {
+//                  LOGGER.info("incomingDataCopy at transformData"+incomingDataCopy);
+                     try {
                         Object transformedOutput = chainr.transform( inputJSON );
 
                         Map incomingMap = new HashMap();
                         incomingMap.put(Constants.DATA_CONTEXT, dataContext);
                         incomingMap.put(Constants.DATA_CONTEXT_VERSION, dataContextVersion);
                         incomingMap.put(Constants.DATA_OBJECT , transformedOutput);
+                        LOGGER.info("DATA_OBJECT at transformData"+transformedOutput);
 
                         incomingMap.put(Constants.IDENTIFIER, idNode.asText());
                         incomingData.put(idNode.asText(), incomingMap);

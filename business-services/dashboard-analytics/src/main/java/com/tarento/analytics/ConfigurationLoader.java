@@ -3,14 +3,17 @@ package com.tarento.analytics;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.io.IOUtils;
+import org.egov.tracer.config.TracerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -19,6 +22,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
+@Import({TracerConfiguration.class})
 @Component("configurationLoader")
 public class ConfigurationLoader {
 
@@ -82,15 +86,23 @@ public class ConfigurationLoader {
      */
     private String getContent(Resource resource) {
         String content = null;
+        InputStream is = null;
         try {
-            InputStream is = resource.getInputStream();
+            is = resource.getInputStream();
             byte[] encoded = IOUtils.toByteArray(is);
             content = new String(encoded, Charset.forName("UTF-8"));
 
         } catch (IOException e) {
             logger.error("Cannot load resource " + resource.getFilename());
 
-        } 
+        } finally{
+            try {
+                if(!ObjectUtils.isEmpty(is))
+                    is.close();
+            }catch(IOException e){
+                logger.error("Error while closing input stream.");
+            }
+        }
         return content;
     }
 

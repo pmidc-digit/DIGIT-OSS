@@ -41,6 +41,8 @@ package org.egov.demand.model;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.egov.demand.model.enums.DemandStatus;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 
@@ -77,6 +79,10 @@ public class GenerateBillCriteria {
 	
 	private String mobileNumber;
 	
+	private Long periodFrom;
+	
+	private Long periodTo;
+	
 	public DemandCriteria toDemandCriteria() {
 		
 		Set<String> consumerCodeSet = new HashSet<>();
@@ -86,12 +92,16 @@ public class GenerateBillCriteria {
 		demandIdSet.add(demandId);
 		
 		return DemandCriteria.builder()
+				.status(DemandStatus.ACTIVE.toString())
 				.businessService(businessService)
 				.consumerCode(consumerCodeSet)
 				.mobileNumber(mobileNumber)
 				.demandId(demandIdSet)
 				.tenantId(tenantId)
+				.isPaymentCompleted(false)
 				.email(email)
+				.periodFrom(periodFrom)
+				.periodTo(periodTo)
 				.build();
 	}
 	
@@ -110,6 +120,8 @@ public class GenerateBillCriteria {
 				.tenantId(tenantId)
 				.isOrderBy(true)
 				.email(email)
+				.periodFrom(periodFrom)
+				.periodTo(periodTo)
 				.build();
 	}
 

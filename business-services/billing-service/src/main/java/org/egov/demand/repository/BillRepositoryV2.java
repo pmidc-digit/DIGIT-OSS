@@ -2,6 +2,7 @@ package org.egov.demand.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,11 +18,13 @@ import org.egov.demand.repository.querybuilder.BillQueryBuilder;
 import org.egov.demand.repository.rowmapper.BillRowMapperV2;
 import org.egov.demand.util.Util;
 import org.egov.demand.web.contract.BillRequestV2;
+import org.egov.demand.web.contract.CancelBillCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,6 +51,15 @@ public class BillRepositoryV2 {
 		log.debug("query:::"+queryStr+"  preparedStatementValues::"+preparedStatementValues);
 		return jdbcTemplate.query(queryStr, preparedStatementValues.toArray(), searchBillRowMapper);
 	}
+
+	public String getLatestActiveBillId(CancelBillCriteria cancelBillCriteria) {
+
+		List<Object> preparedStatementValues = new ArrayList<>();
+		String queryStr = billQueryBuilder.getLatestBillQuery(preparedStatementValues, cancelBillCriteria);
+		log.debug("query:::" + queryStr + "  preparedStatementValues::" + preparedStatementValues);
+		return jdbcTemplate.queryForObject(queryStr, preparedStatementValues.toArray(), String.class);
+	}
+	
 	
 	@Transactional
 	public void saveBill(BillRequestV2 billRequest){
@@ -186,11 +198,13 @@ public class BillRepositoryV2 {
 	 * executes query to update bill status to expired 
 	 * @param billIds
 	 */
-	public void updateBillStatus(List<String> cosnumerCodes, BillStatus status) {
+	public void updateBillStatus(List<String> consumerCodes, String businessService, BillStatus status) {
+		if (CollectionUtils.isEmpty(consumerCodes))
+			return;
 
 		List<Object> preparedStmtList = new ArrayList<>();
 		preparedStmtList.add(status.toString());
-		String queryStr = billQueryBuilder.getBillStatusUpdateQuery(cosnumerCodes, preparedStmtList);
+		String queryStr = billQueryBuilder.getBillStatusUpdateQuery(consumerCodes, businessService, preparedStmtList);
 		jdbcTemplate.update(queryStr, preparedStmtList.toArray());
 	}
 	
@@ -220,5 +234,15 @@ public class BillRepositoryV2 {
 				return billIdAndStatusMap.size();
 			}
 		});
+	}
+
+	public void updateBillStatusBYId(String billId, String billStatus) {
+		// TODO Auto-generated method stub
+		String queryStr = billQueryBuilder.getBillStatusUpdateBatchQuery();
+		List<Object> prepareStatementValues = new ArrayList<Object>();
+		prepareStatementValues.add(billStatus);
+		prepareStatementValues.add(billId);
+		int[] types = {Types.VARCHAR, Types.VARCHAR};
+		jdbcTemplate.update(queryStr, prepareStatementValues.toArray(), types);
 	}
 }

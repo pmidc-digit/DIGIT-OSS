@@ -192,5 +192,17 @@ public class ApplicationProperties {
     
     @Value("${amendment.id.format.name}")
     private String amendmentIdFormatName;
+
+	@Value("${egov.shortener.url}")
+	private String egovShortenerUrl;
+
+	@Value("${notification.url}")
+	private String notificationUrl;
+
+	@Value("${notification.sms.link}")
+	private String smsNotificationLink;
+
+	@Value("${egov.shortener.host}")
+	private String shortenerHost;
     
 }
