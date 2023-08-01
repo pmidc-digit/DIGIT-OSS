@@ -1,33 +1,75 @@
-# Digit UI
-DIGIT (Digital Infrastructure for Governance, Impact & Transformation) is India's largest platform for governance services. Visit https://www.digit.org for more details.
+# Starting with Digit-UI Internal Development (Engineering Team) - MICRO-UI
+cd into /micro-ui/web/micro-ui-internals
+In the project directory, you can run:
+### `yarn install`
+### `yarn run start:dev` or `yarn run sprint`
 
-This repository contains source code for web implementation of the new Digit UI modules with dependencies and libraries.
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-#### Starting local server
-1. To run server locally first change directory to **web** subdirectory
-1. In the project run **yarn install** to install node modules and dependencies 
-1. Run **yarn start** to start the local server
+# Starting with Digit-UI App (Impelmentation Teams) - MICRO-UI
+cd into /micro-ui/web
+In the project directory, you can run:
+### `yarn install`
+### `yarn run start`
 
-#### Updating modules
-To update the modules run *install-dep.sh* script this will pull all the updates from *digit-ui-internals* repository
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-#### Reference Docs
+# Starting with Citizen App (Old UI) - MONO-UI
+cd into /mono-ui/web/rainmaker
+In the project directory, you can run:
+### `yarn install`
+### `yarn run go`
+### `yarn run dev:citizen`
 
-###### Module wise reference docs
-Module | Reference Docs
------- | --------------
-PGR | https://digit-discuss.atlassian.net/wiki/spaces/EPE/pages/1285587062/PGR+UI+Implementation+-+Guidelines+FAQs
-FSM | https://digit-discuss.atlassian.net/wiki/spaces/EPE/pages/1290567710/FSM+UI+Implementation+-+Guidelines+FAQs
-DIGIT Services | https://digit-discuss.atlassian.net/wiki/spaces/DD/pages/647364616/DIGIT+Services
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-###### Dependencies and their references
-1. https://www.npmjs.com/package/react-query
-2. https://react-redux.js.org/
-3. https://react-hook-form.com/
-4. https://www.npmjs.com/package/react-table
-5. https://www.npmjs.com/package/react-time-picker
-6. https://reactrouter.com/web/guides/quick-start
-7. https://recharts.org/
+# Starting with Employee App (Old UI) - MONO-UI
+cd into /mono-ui/web/rainmaker
+In the project directory, you can run:
+### `yarn install`
+### `yarn run go`
+### `yarn run dev:employee`
 
-#### License
-These reference apps are released under MIT
+Runs the app in the development mode.\
+Open [http://localhost:3006](http://localhost:3006) to view it in the browser.
+
+
+# Starting with Dashboard App (Old UI) - MONO-UI
+cd into /mono-ui/web/dss-dashboard
+In the project directory, you can run:
+### `yarn install`
+### `yarn run start`
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+
+# Dashboard App
+    Contains Dashboard for all modules: 
+
+# MONO UI App
+    Contains Citizen & Employee App for the modules like
+    1. Property Tax
+    2. Complaints
+    3. Tradelicence
+    4. NOC
+    5. FireNOC
+    6. Water & Sewerage
+    7. MISC Collections
+    8. Bill & Receipts
+    9. HRMS
+    10. OBPS
+
+# MICRO UI App
+    Contains Citizen & Employee App for the modules like
+    1. Property Tax
+    2. Complaints
+    3. Tradelicence
+    4. NOC
+    5. FSM
+    6. HRMS
+    7. OBOS
+
