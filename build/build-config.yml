@@ -734,7 +734,7 @@ config:
   - name: builds/DIGIT-PUNJAB/frontend/micro-ui/digit-ui
     build:
       - work-dir: frontend/micro-ui/
-        dockerfile: frontend/web/docker/Dockerfile
+        dockerfile: frontend/micro-ui/web/docker/Dockerfile
         image-name: digit-ui
 
   - name: builds/DIGIT-PUNJAB/frontend/micro-ui/storybook
