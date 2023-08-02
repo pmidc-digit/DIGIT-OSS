@@ -9,7 +9,6 @@ COPY ${WORK_DIR} .
 RUN ls -lah
 
 RUN node web/envs.js
-RUN cd web && git branch --show-current
 RUN cd web && ./install-deps.sh
 RUN cd web && yarn install
 RUN cd web && ls -lah
