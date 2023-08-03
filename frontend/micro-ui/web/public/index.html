@@ -11,14 +11,14 @@
     <title>SUJOG</title>
     <script>
       var globalConfigs = (function () {
-      var stateTenantId = 'pg'
+      var stateTenantId = 'pb'
       var gmaps_api_key = 'AIzaSyAQOd09-vjmk1sXFb_ZQYDz2nlfhXq7Wf8'
       var finEnv = 'uat'
       var centralInstanceEnabled = false;
       var footerBWLogoURL = 'https://s3.ap-south-1.amazonaws.com/egov-uat-assets/digit-footer-bw.png'
       var footerLogoURL = 'https://s3.ap-south-1.amazonaws.com/egov-uat-assets/digit-footer.png'
       var digitHomeURL = 'https://www.digit.org/'
-      var assetS3Bucket = 'pg-egov-assets';
+      var assetS3Bucket = 'egov-qa-assets';
       var getConfig = function (key) {
         if (key === 'STATE_LEVEL_TENANT_ID') {
           return stateTenantId;
