@@ -111,50 +111,6 @@ const SelectTrips = ({
       if (formData?.tripData?.vehicleType !== vehicle) {
         setVehicle({ label: formData?.tripData?.vehicleType?.capacity });
       }
-
-      if (
-        formData?.address?.propertyLocation?.code === "FROM_GRAM_PANCHAYAT" &&
-        formData.tripData.noOfTrips &&
-        formData.tripData.amountPerTrip
-      ) {
-        setValue({
-          amount: formData.tripData.amountPerTrip * formData.tripData.noOfTrips,
-        });
-      } else if (
-        formData?.propertyType &&
-        formData?.subtype &&
-        formData?.address &&
-        formData?.tripData?.vehicleType?.capacity &&
-        formData?.address?.propertyLocation?.code === "WITHIN_ULB_LIMITS"
-      ) {
-        const capacity = formData?.tripData?.vehicleType.capacity;
-        const { slum: slumDetails } = formData.address;
-        const slum = slumDetails ? "YES" : "NO";
-        const billingDetails = await Digit.FSMService.billingSlabSearch(
-          tenantId,
-          {
-            propertyType: formData?.subtype,
-            capacity,
-            slum,
-          }
-        );
-
-        const billSlab =
-          billingDetails?.billingSlab?.length && billingDetails?.billingSlab[0];
-        if (billSlab?.price || billSlab?.price === 0) {
-          setValue({
-            amountPerTrip: billSlab.price,
-            amount: billSlab.price * formData.tripData.noOfTrips,
-          });
-          setError(false);
-        } else {
-          setValue({
-            amountPerTrip: "",
-            amount: "",
-          });
-          setError(true);
-        }
-      }
     })();
   }, [
     formData?.propertyType,

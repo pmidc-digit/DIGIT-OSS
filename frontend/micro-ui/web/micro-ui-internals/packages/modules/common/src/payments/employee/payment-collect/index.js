@@ -82,14 +82,8 @@ export const CollectPayment = (props) => {
   const [selectedPaidBy, setselectedPaidBy] = useState(formState?.paidBy || { code: "OWNER", name: t("COMMON_OWNER") });
 
   const onSubmit = async (data) => {
-    if (
-      (applicationData?.address?.additionalDetails?.boundaryType === "GP" ||
-        applicationData?.address?.additionalDetails?.boundaryType === "Village") &&
-      applicationData?.applicationStatus !== "DSO_INPROGRESS"
-    ) {
-      bill.totalAmount = Number(applicationData?.additionalDetails?.tripAmount) * applicationData?.noOfTrips;
-    } else {
-      bill.totalAmount = Math.round(bill.totalAmount);
+    if (applicationData?.applicationStatus !== "DSO_INPROGRESS") {
+      bill.totalAmount = Number(applicationData?.additionalDetails?.tripAmount);
     }
     data.paidBy = data.paidBy.code;
 

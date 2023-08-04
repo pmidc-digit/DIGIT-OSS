@@ -87,17 +87,8 @@ export const Search = {
     var amountPerTrip = "";
     var totalAmount = "";
     const demandDetails = await PaymentService.demandSearch(tenantId, applicationNos, "FSM.TRIP_CHARGES");
-    if (additionalDetails?.boundaryType === "Village" || additionalDetails?.boundaryType === "GP") {
-      amountPerTrip = response?.additionalDetails && response?.additionalDetails?.tripAmount ? response?.additionalDetails?.tripAmount : "N/A";
-      totalAmount = response?.additionalDetails?.tripAmount ? response?.additionalDetails?.tripAmount * response?.noOfTrips : "N/A";
-    } else {
-      amountPerTrip =
-        response?.additionalDetails && response?.additionalDetails?.tripAmount
-          ? response?.additionalDetails?.tripAmount
-          : demandDetails?.Demands[0]?.demandDetails[0]?.taxAmount || "N/A";
-      // const totalAmount = response?.noOfTrips === 0 || amountPerTrip === "N/A" ? "N/A" : response?.noOfTrips * Number(amountPerTrip);
-      totalAmount = demandDetails?.Demands[0]?.demandDetails?.map((detail) => detail?.taxAmount)?.reduce((a, b) => a + b) || "N/A";
-    }
+    amountPerTrip = response?.additionalDetails && response?.additionalDetails?.tripAmount ? response?.additionalDetails?.tripAmount : "N/A";
+    totalAmount = response?.additionalDetails?.tripAmount ? response?.additionalDetails?.tripAmount * response?.noOfTrips : "N/A";
     var balancePaid = demandDetails?.Demands[0]?.demandDetails?.map((detail) => detail?.collectionAmount)?.reduce((a, b) => a + b) || "N/A";
     balancePaid = balancePaid - response?.advanceAmount;
     const isFullPaymentDone =

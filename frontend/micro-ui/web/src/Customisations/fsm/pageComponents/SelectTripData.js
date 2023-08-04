@@ -81,10 +81,7 @@ const SelectTripData = ({ t, config, onSelect, formData = {}, userType }) => {
         title: t("ES_APPLICATION_BILL_SLAB_ERROR"),
       },
       default: formData?.tripData?.amountPerTrip,
-      disable:
-        formData?.address?.propertyLocation?.code === "FROM_GRAM_PANCHAYAT"
-          ? false
-          : true,
+      disable: false,
       isMandatory: true,
     },
     {
@@ -124,52 +121,11 @@ const SelectTripData = ({ t, config, onSelect, formData = {}, userType }) => {
   useEffect(() => {
     (async () => {
       if (formData?.tripData?.vehicleType !== vehicle) {
-        setVehicle({ label: formData?.tripData?.vehicleType?.capacity });
+        setVehicle({ label: formData?.amountPerTrip?.vehicleType?.capacity });
       }
-
-      if (
-        formData?.propertyType &&
-        formData?.subtype &&
-        formData?.address &&
-        formData?.tripData?.vehicleType?.capacity &&
-        formData?.address?.propertyLocation?.code === "WITHIN_ULB_LIMITS"
-      ) {
-        const capacity = formData?.tripData?.vehicleType.capacity;
-        const { slum: slumDetails } = formData.address;
-        const slum = slumDetails ? "YES" : "NO";
-        const billingDetails = await Digit.FSMService.billingSlabSearch(
-          tenantId,
-          {
-            propertyType: formData?.subtype,
-            capacity,
-            slum,
-          }
-        );
-
-        const billSlab =
-          billingDetails?.billingSlab?.length && billingDetails?.billingSlab[0];
-        if (billSlab?.price || billSlab?.price === 0) {
-          setValue({
-            amountPerTrip: billSlab.price,
-            amount: billSlab.price * formData.tripData.noOfTrips,
-          });
-          setError(false);
-        } else {
-          setValue({
-            amountPerTrip: "",
-            amount: "",
-          });
-          setError(true);
-        }
-      } else if (
-        formData?.address?.propertyLocation?.code === "FROM_GRAM_PANCHAYAT" &&
-        formData.tripData.noOfTrips &&
-        formData.tripData.amountPerTrip
-      ) {
-        setValue({
-          amount: formData.tripData.amountPerTrip * formData.tripData.noOfTrips,
-        });
-      }
+      setValue({
+        amount: formData.tripData.amountPerTrip * formData.tripData.noOfTrips,
+      });
     })();
   }, [
     formData?.propertyType,
@@ -193,13 +149,7 @@ const SelectTripData = ({ t, config, onSelect, formData = {}, userType }) => {
           <div className="field">
             <TextInput
               type={input.type}
-              onChange={(e) =>
-                index === 0 &&
-                formData.address.propertyLocation?.code ===
-                  "FROM_GRAM_PANCHAYAT"
-                  ? setAmount(e.target.value)
-                  : setTripNum(e.target.value)
-              }
+              onChange={(e) => setAmount(e.target.value)}
               key={input.name}
               value={
                 input.default
