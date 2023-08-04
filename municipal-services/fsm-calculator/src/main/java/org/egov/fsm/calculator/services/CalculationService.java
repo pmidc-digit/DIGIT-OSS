@@ -252,18 +252,10 @@ public class CalculationService {
 
 			amount = tripAmountDetails(fsm, amount, slumName);
 
-		} else {
-			List<BillingSlab> billingSlabs = billingSlabRepository.getBillingSlabData(
-					BillingSlabSearchCriteria.builder().capacity(NumberUtils.toDouble(fsm.getVehicleCapacity()))
-							.slum(slumName).propertyType(fsm.getPropertyUsage()).tenantId(fsm.getTenantId()).build());
-			if (!billingSlabs.isEmpty()) {
-				amount = billingSlabs.get(0).getPrice();
-			}
 		}
 
 		if (amount == null) {
-			throw new CustomException(CalculatorConstants.INVALID_PRICE,
-					"Price not found in Billing Slab for the given propertyType and slumName");
+			amount = 0;
 		}
 		calculatedAmount = calculateTripAmount(noOftripsAllowed, calulationCriteria, fsm, requestInfo, amount,
 				calculatedAmount, paidAmount);
