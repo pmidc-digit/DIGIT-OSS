@@ -24,20 +24,17 @@ const EmployeeSideBar = () => {
     key = "ACTION_TEST_NATDASHBOARD";
   }
 
-  function getRedirectionUrl(){
-    if (NATADMIN)
-      return "/digit-ui/employee/payment/integration/dss/NURT_DASHBOARD";
-    else if(STADMIN)
-      return "/employee/integration/dss/home";
-    else
-      return "/employee/";
+  function getRedirectionUrl() {
+    if (NATADMIN) return "/digit-ui/employee/payment/integration/dss/NURT_DASHBOARD";
+    else if (STADMIN) return "/employee/integration/dss/home";
+    else return "/digit-ui/employee/";
   }
 
   const { t } = useTranslation();
   return (
     <div className="sidebar">
       <Link to="/digit-ui/employee">
-        <div className="actions active" style={{marginTop: "20px", width: "55px"}}>
+        <div className="actions active" style={{ marginTop: "20px", width: "55px" }}>
           <ToolTipWrapper
             child={
               <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
@@ -50,8 +47,8 @@ const EmployeeSideBar = () => {
           />
         </div>
       </Link>
-      <a href={getRedirectionUrl()}>
-        <div className="actions" style={{marginTop: "20px", width: "55px"}}>
+      {/* <a href={getRedirectionUrl()}>
+        <div className="actions" style={{ marginTop: "20px", width: "55px" }}>
           <ToolTipWrapper
             child={
               <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
@@ -65,7 +62,7 @@ const EmployeeSideBar = () => {
             label={"CORE_CHANGE_TENANT_DESCRIPTION"}
           />
         </div>
-      </a>
+      </a> */}
       {/*
       <a href={key.includes("DASHBOARD") ? `/employee/integration/dss/${NATADMIN ? "NURT_DASHBOARD" : "home"}` : "/employee"}>
         <div className="actions">
