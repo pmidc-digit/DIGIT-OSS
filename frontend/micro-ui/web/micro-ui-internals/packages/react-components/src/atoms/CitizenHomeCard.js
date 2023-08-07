@@ -10,13 +10,16 @@ const CitizenHomeCard = ({ header, links = [], state, Icon, Info, isInfo = false
       </div>
 
       <div className="links">
-        {links.map((e, i) => (
-          <div className="linksWrapper">
-            <Link key={i} to={{ pathname: e.link, state: e.state }}>
-              {e.i18nKey}
-            </Link>
-          </div>
-        ))}
+        {links.map(
+          (e, i) =>
+            e.i18nKey.length > 0 && (
+              <div className="linksWrapper">
+                <Link key={i} to={{ pathname: e.link, state: e.state }}>
+                  {e.i18nKey}
+                </Link>
+              </div>
+            )
+        )}
       </div>
       <div>{isInfo ? <Info /> : null}</div>
     </div>
