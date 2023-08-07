@@ -195,7 +195,7 @@ const SelectLocalityOrGramPanchayat = ({ t, config, onSelect, userType, formData
                 t={t}
               />
             </LabelFieldPair>
-            {selectedGp?.name === "Other" && (
+            {selectedGp?.name === "OTHER" && (
               <LabelFieldPair>
                 <CardLabel className="card-label-smaller">{`${t("ES_INBOX_PLEASE_SPECIFY_GRAM_PANCHAYAT")} *`}</CardLabel>
                 <div className="field">
@@ -244,7 +244,7 @@ const SelectLocalityOrGramPanchayat = ({ t, config, onSelect, userType, formData
                   t={t}
                 />
               </LabelFieldPair>
-              {formData?.address?.locality?.name === "Other" && (
+              {formData?.address?.locality?.name === "OTHER" && (
                 <LabelFieldPair>
                   <CardLabel className="card-label-smaller">{`${t("ES_INBOX_PLEASE_SPECIFY_LOCALITY")} *`}</CardLabel>
                   <div className="field">

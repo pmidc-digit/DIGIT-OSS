@@ -141,6 +141,11 @@ const FSMCard = () => {
           label: t("ES_TITLE_FSM_REGISTRY"),
           icon: <AddNewIcon />,
         },
+        {
+          link: "/digit-ui/employee/dss/dashboard/fsm",
+          label: t("ES_TITLE_FSM_DASHBOARD"),
+          icon: <AddNewIcon />,
+        },
       ]
     : [];
 

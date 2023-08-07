@@ -10,11 +10,9 @@ const Header = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <div className="bannerHeader">
-      <div style={{ display: "flex" }}>
-        <img className="bannerLogo" src={stateInfo?.logoUrl} alt="Digit" />
-        {/* <p>{t(`TENANT_TENANTS_${stateInfo?.code.toUpperCase()}`)}</p> */}
-      </div>
+    <div className="bannerHeader" style={{ display: "flex", justifyContent: "space-between" }}>
+      <img style={{ width: "180px" }} src={stateInfo?.logoUrl} alt="Digit" />
+      {/* <p>{t(`TENANT_TENANTS_${stateInfo?.code.toUpperCase()}`)}</p> */}
       <img style={{ height: "40px" }} src={stateInfo?.pmidcLogoUrl} alt="PMIDC" />
     </div>
   );

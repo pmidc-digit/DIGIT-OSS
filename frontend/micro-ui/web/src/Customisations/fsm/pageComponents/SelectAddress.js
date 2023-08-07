@@ -228,7 +228,7 @@ const SelectAddress = ({ t, config, onSelect, userType, formData }) => {
             {!isNewVendor &&
               !isEditVendor &&
               !isUrcEnable &&
-              formData?.address?.locality?.name === "Other" && (
+              formData?.address?.locality?.name === "OTHER" && (
                 <LabelFieldPair>
                   <CardLabel className="card-label-smaller">{`${t(
                     "ES_INBOX_PLEASE_SPECIFY_LOCALITY"

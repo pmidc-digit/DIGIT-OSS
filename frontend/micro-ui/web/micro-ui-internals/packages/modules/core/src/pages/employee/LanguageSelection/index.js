@@ -25,11 +25,9 @@ const LanguageSelection = () => {
   return (
     <Background>
       <Card className="bannerCard removeBottomMargin">
-        <div className="bannerHeader">
-          <div style={{ display: "flex" }}>
-            <img className="bannerLogo" src={stateInfo?.logoUrl} alt="Digit" />
-            {/* <p>{t(`TENANT_TENANTS_${stateInfo?.code.toUpperCase()}`)}</p> */}
-          </div>
+        <div className="bannerHeader" style={{ display: "flex", justifyContent: "space-between" }}>
+          <img style={{ width: "180px" }} src={stateInfo?.logoUrl} alt="Digit" />
+          {/* <p>{t(`TENANT_TENANTS_${stateInfo?.code.toUpperCase()}`)}</p> */}
           <img style={{ height: "40px" }} src={stateInfo?.pmidcLogoUrl} alt="PMIDC" />
         </div>
         <div className="language-selector" style={{ justifyContent: "space-around", marginBottom: "24px", padding: "0 5%" }}>
