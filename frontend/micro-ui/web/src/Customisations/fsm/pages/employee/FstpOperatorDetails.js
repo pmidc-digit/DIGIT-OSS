@@ -331,7 +331,7 @@ const FstpOperatorDetails = () => {
     }
     if (
       (selectLocation?.code !== "FROM_GRAM_PANCHAYAT" &&
-        (selectedLocality?.name === "Other" ||
+        (selectedLocality?.name === "OTHER" ||
           selectLocation?.code === "FROM_OTHER_ULB") &&
         newLocality === null) ||
       newLocality?.trim()?.length === 0 ||
@@ -525,7 +525,7 @@ const FstpOperatorDetails = () => {
 
   function selectGramPanchayat(value) {
     setSelectedGp(value);
-    if (value.name !== "Other") {
+    if (value.name !== "OTHER") {
       const filteredVillages = gramPanchayats.filter(
         (items) => items.code === value.code
       )[0]?.children;
@@ -536,7 +536,7 @@ const FstpOperatorDetails = () => {
       if (localitiesWithLocalizationKeys.length > 0) {
         localitiesWithLocalizationKeys.push({
           code: "OTHER",
-          name: "Other",
+          name: "OTHER",
           i18nkey: tenantId.replace(".", "_").toUpperCase() + "_OTHER",
         });
         setVillages(localitiesWithLocalizationKeys);
@@ -671,7 +671,7 @@ const FstpOperatorDetails = () => {
                 last={false}
                 labelStyle={{ fontWeight: "normal" }}
               />
-              {selectedGp?.name === "Other" && (
+              {selectedGp?.name === "OTHER" && (
                 <div>
                   <Row
                     rowContainerStyle={
@@ -733,7 +733,7 @@ const FstpOperatorDetails = () => {
                   />
                 </div>
               )}
-              {selectedGp?.name !== "Other" && (
+              {selectedGp?.name !== "OTHER" && (
                 <Row
                   rowContainerStyle={
                     isMobile &&
@@ -854,7 +854,7 @@ const FstpOperatorDetails = () => {
                 last={false}
                 labelStyle={{ fontWeight: "normal" }}
               />
-              {selectedLocality?.name === "Other" && (
+              {selectedLocality?.name === "OTHER" && (
                 <Row
                   rowContainerStyle={
                     isMobile &&

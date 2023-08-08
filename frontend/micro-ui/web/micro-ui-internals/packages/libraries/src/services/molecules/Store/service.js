@@ -66,6 +66,7 @@ export const StoreService = {
         code: stateInfo.code,
         name: stateInfo.name,
         logoUrl: stateInfo.logoUrl,
+        pmidcLogoUrl: stateInfo.pmidcLogoUrl,
         statelogo: stateInfo.statelogo,
         logoUrlWhite: stateInfo.logoUrlWhite,
         bannerUrl: stateInfo.bannerUrl,
