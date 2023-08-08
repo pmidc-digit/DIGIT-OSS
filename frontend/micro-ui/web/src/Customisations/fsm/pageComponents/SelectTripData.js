@@ -72,13 +72,14 @@ const SelectTripData = ({ t, config, onSelect, formData = {}, userType }) => {
   const inputs = [
     {
       label: "ES_NEW_APPLICATION_AMOUNT_PER_TRIP",
-      type: "text",
+      type: "number",
       name: "amountPerTrip",
       error: t("ES_NEW_APPLICATION_AMOUNT_INVALID"),
       validation: {
         isRequired: true,
         pattern: "[0-9]{1,10}",
         title: t("ES_APPLICATION_BILL_SLAB_ERROR"),
+        max: "999999",
       },
       default: formData?.tripData?.amountPerTrip,
       disable: false,
