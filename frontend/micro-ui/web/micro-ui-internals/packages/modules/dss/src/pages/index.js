@@ -62,10 +62,10 @@ const DashBoard = ({ stateCode }) => {
   const { isLoading: localizationLoading, data: store } = Digit.Services.useStore({ stateCode, moduleCode, language });
   const { data: screenConfig, isLoading: isServicesLoading } = Digit.Hooks.dss.useMDMS(stateCode, "dss-dashboard", "DssDashboard", {
     select: (data) => {
-      let screenConfig = data?.["dss-dashboard"]["dashboard-config"][0].MODULE_LEVEL;
+      let screenConfig = data?.["dss-dashboard"]?.["dashboard-config"]?.[0].MODULE_LEVEL;
       let reduced_array = [];
-      for (let i = 0; i < screenConfig.length; i++) {
-        if (screenConfig[i].dashboard !== null) {
+      for (let i = 0; i < screenConfig?.length; i++) {
+        if (screenConfig[i]?.dashboard !== null) {
           reduced_array.push(screenConfig[i]);
         }
       }
