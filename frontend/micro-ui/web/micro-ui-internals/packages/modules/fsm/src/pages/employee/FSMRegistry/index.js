@@ -18,7 +18,7 @@ const FSMRegistry = () => {
   const userInfo = Digit.UserService.getUser();
 
   let paginationParms = { limit: pageSize, offset: pageOffset, sortBy: sortParams?.[0]?.id, sortOrder: sortParams?.[0]?.desc ? "DESC" : "ASC" };
-  const { data: dsoData, isLoading: isLoading, isSuccess: isDsoSuccess, error: dsoError, refetch } =
+  const { data: dsoData, isLoading: isLoading, isfecthing: isfecthing, isSuccess: isDsoSuccess, error: dsoError, refetch } =
     tab === "VEHICLE"
       ? Digit.Hooks.fsm.useVehiclesSearch({
           tenantId,
@@ -46,7 +46,7 @@ const FSMRegistry = () => {
             name: searchParams?.name,
             status: "ACTIVE,DISABLED",
           },
-          config: { enabled: false },
+          config: { enabled: true },
         });
 
   const {
@@ -61,9 +61,11 @@ const FSMRegistry = () => {
       vehicleIds: vehicleIds,
       driverIds: driverIds,
     },
-    { enabled: false }
+    { enabled: true }
   );
-
+  console.log(isLoading, "isLoading");
+  console.log(isfecthing, "isfecthing");
+  console.log(dsoData, "dsoData");
   const inboxTotalCount = dsoData?.totalCount || 50;
 
   useEffect(() => {
