@@ -201,7 +201,10 @@ export const Search = {
                   : "₹ " + response?.noOfTrips * amountPerTrip
                 : "₹ " + totalAmount,
           },
-          { title: "ES_PAYMENT_DETAILS_ADV_AMOUNT_PAID", value: !isPaymentDone ? "N/A" : "₹ " + response?.advanceAmount },
+          {
+            title: "ES_PAYMENT_DETAILS_ADV_AMOUNT_PAID",
+            value: !isPaymentDone ? "N/A" : response?.advanceAmount === null ? "N/A" : "₹ " + response?.advanceAmount,
+          },
           {
             title: "ES_PAYMENT_DETAILS_BLS_AMOUNT_PAID",
             value: !isPaymentDone ? "N/A" : "₹ " + balancePaid,
