@@ -67,19 +67,26 @@ public class UserService {
 					Boolean foundUser = Boolean.FALSE;
 					for (int j = 0; j < userDetailResponse.getUser().size(); j++) {
 						User user = userDetailResponse.getUser().get(j);
-						if (!user.getUserName().equalsIgnoreCase(user.getMobileNumber())
+						if (user.getUserName().equalsIgnoreCase(user.getMobileNumber())
 								&& user.getName().equalsIgnoreCase(applicant.getName())) {
-							// found user with mobilenumber and username not same and name as equal to the
-							// applicnat name provided by ui
-							// then consider that user as applicant
+							// found user with mobilenumber and username same and name as equal
+							//condition gets executed when logged-in citizen applies for application.
+
+							applicant = user;
+							foundUser = Boolean.TRUE;
+							break;
+						} else if (!user.getUserName().equalsIgnoreCase(user.getMobileNumber())
+								&& user.getMobileNumber().equalsIgnoreCase(applicant.getMobileNumber())
+								&& user.getName().equalsIgnoreCase(applicant.getName())) {
+							//Checking if user exists with same name and mobilenumber but citizen has not registered on the portal
 							applicant = user;
 							foundUser = Boolean.TRUE;
 							break;
 						}
 					}
-					// users exists with mobile number but non of them have the same name, then
+					// users exists with mobile number but none of them have the same name, then
 					// create new user
-					if (foundUser) {
+					if (!foundUser) {
 						applicantDetailResponse = createApplicant(applicant, fsmRequest.getRequestInfo(),
 								Boolean.FALSE);
 						applicant = applicantDetailResponse.getUser().get(0);
