@@ -265,7 +265,7 @@ public class CalculationService {
 
 		// adding default amount as 0 when the pricing not mentioned manually
 		if (amount == null) {
-			amount = BigDecimal.valueOf(0);
+			amount = 0;
 			// throw new CustomException(CalculatorConstants.INVALID_PRICE,
 			// 		"Price not found in Billing Slab for the given propertyType and slumName");
 		}
