@@ -15,7 +15,8 @@ const VehicleConfig = (t, disabled = false) => {
             name: "registrationNumber",
             ValidationRequired: true,
             validation: {
-              pattern: `[A-Z]{2}[0-9]{2}[A-Z]{0,2}[0-9]{4}`,
+              pattern: "[a-zA-Z0-9]{10}",
+              // pattern: `[A-Z]{2}[0-9]{2}[A-Z]{0,2}[0-9]{4}`,
               title: t("ES_FSM_VEHICLE_FORMAT_TIP"),
             },
             error: t("FSM_REGISTRY_INVALID_REGISTRATION_NUMBER"),
