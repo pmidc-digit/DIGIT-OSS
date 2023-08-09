@@ -64,7 +64,7 @@ public class UserService {
 			if (userDetailResponse != null || !userDetailResponse.getUser().isEmpty()) {
 
 				if (!userDetailResponse.getUser().isEmpty()) {
-					Boolean foundUser = Boolean.FALSE;
+					Boolean foundUser = Boolean.FALSE, isCitizenRegisteredOnCitizPortal = Boolean.FALSE;
 					for (int j = 0; j < userDetailResponse.getUser().size(); j++) {
 						User user = userDetailResponse.getUser().get(j);
 						if (user.getUserName().equalsIgnoreCase(user.getMobileNumber())
@@ -74,14 +74,21 @@ public class UserService {
 
 							applicant = user;
 							foundUser = Boolean.TRUE;
+							isCitizenRegisteredOnCitizPortal = Boolean.TRUE;
 							break;
-						} else if (!user.getUserName().equalsIgnoreCase(user.getMobileNumber())
-								&& user.getMobileNumber().equalsIgnoreCase(applicant.getMobileNumber())
-								&& user.getName().equalsIgnoreCase(applicant.getName())) {
-							//Checking if user exists with same name and mobilenumber but citizen has not registered on the portal
-							applicant = user;
-							foundUser = Boolean.TRUE;
-							break;
+						}
+					}
+					if (!isCitizenRegisteredOnCitizPortal) {
+						for (int j = 0; j < userDetailResponse.getUser().size(); j++) {
+							User user = userDetailResponse.getUser().get(j);
+							if (!user.getUserName().equalsIgnoreCase(user.getMobileNumber())
+									&& user.getMobileNumber().equalsIgnoreCase(applicant.getMobileNumber())
+									&& user.getName().equalsIgnoreCase(applicant.getName())) {
+								//Checking if user exists with same name and mobilenumber but citizen has not registered on the portal
+								applicant = user;
+								foundUser = Boolean.TRUE;
+								break;
+							}
 						}
 					}
 					// users exists with mobile number but none of them have the same name, then
