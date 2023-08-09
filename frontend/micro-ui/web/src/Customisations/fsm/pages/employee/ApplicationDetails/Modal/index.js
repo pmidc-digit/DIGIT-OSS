@@ -593,16 +593,6 @@ const ActionModal = ({
         formId="modal-action"
         defaultValues={defaultValues}
       ></FormComposer>
-      {action === "COMPLETED" ? (
-        <UploadPitPhoto
-          header=""
-          tenantId={tenantId}
-          cardText=""
-          onPhotoChange={handleUpload}
-          uploadedImages={null}
-        />
-      ) : null}
-
       {/* {toastError && <Toast {...toastError} />} */}
     </Modal>
   ) : (
