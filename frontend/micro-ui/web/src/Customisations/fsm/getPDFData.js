@@ -171,16 +171,20 @@ const getPDFData = (application, tenantInfo, t) => {
           },
           {
             title: t("CS_VILLAGE_NAME"),
-            value: application?.address?.additionalDetails?.village?.code
-              ? t(
-                  `${application?.tenantId
-                    ?.toUpperCase()
-                    .split(".")
-                    .join("_")}_REVENUE_${
+            value:
+              application?.address?.additionalDetails?.village?.code ||
+              application?.address?.additionalDetails?.village
+                ? t(
                     application?.address?.additionalDetails?.village?.code
-                  }`
-                )
-              : "N/A",
+                      ? `${application?.tenantId
+                          ?.toUpperCase()
+                          .split(".")
+                          .join("_")}_REVENUE_${
+                          application?.address?.additionalDetails?.village?.code
+                        }`
+                      : `${application?.address?.additionalDetails?.village}`
+                  )
+                : "N/A",
           },
           {
             title: t("CS_APPLICATION_DETAILS_SLUM_NAME"),
