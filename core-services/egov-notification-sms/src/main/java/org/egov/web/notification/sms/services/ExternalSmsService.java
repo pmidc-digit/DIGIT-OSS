@@ -76,8 +76,8 @@ import java.security.NoSuchAlgorithmException;
 
 @ConditionalOnProperty(value = "sms.enabled", havingValue = "true")
 @Service
-public class ExternalSMSService implements SMSService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSMSService.class);
+public class ExternalSmsService implements SMSService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSmsService.class);
 
     private static final String SMS_RESPONSE_NOT_SUCCESSFUL = "Sms response not successful";
 
@@ -101,7 +101,7 @@ public class ExternalSMSService implements SMSService {
 
 
     @Autowired
-    public ExternalSMSService(SmsProperties smsProperties, RestTemplate restTemplate) {
+    public ExternalSmsService(SmsProperties smsProperties, RestTemplate restTemplate) {
         this.smsProperties = smsProperties;
         this.restTemplate = restTemplate;
     }
