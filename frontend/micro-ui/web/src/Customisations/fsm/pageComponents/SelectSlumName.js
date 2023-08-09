@@ -56,9 +56,10 @@ const SelectSlumName = ({ config, onSelect, t, userType, formData }) => {
               name: "Not residing in slum area",
               i18nKey: "ES_APPLICATION_NOT_SLUM_AREA",
             },
-            ...Object.keys(slumData)
-              .map((key) => slumData[key])
-              .reduce((prev, curr) => [...prev, ...curr]),
+            slumData &&
+              Object.keys(slumData)
+                ?.map((key) => slumData[key])
+                ?.reduce((prev, curr) => [...prev, ...curr], 0),
           ];
       setSlumMenu(optionalSlumData);
 
@@ -73,9 +74,11 @@ const SelectSlumName = ({ config, onSelect, t, userType, formData }) => {
       }
     }
     if (userType !== "employee" && !slumDataLoading && slumData) {
-      const allSlum = Object.keys(slumData)
-        .map((key) => slumData[key])
-        .reduce((prev, curr) => [...prev, ...curr]);
+      const allSlum =
+        slumData &&
+        Object.keys(slumData)
+          ?.map((key) => slumData[key])
+          ?.reduce((prev, curr) => [...prev, ...curr]);
       slumData[locality]
         ? setSlumMenu(slumData[locality])
         : setSlumMenu(allSlum);
@@ -115,7 +118,7 @@ const SelectSlumName = ({ config, onSelect, t, userType, formData }) => {
         </CardLabel>
         <Dropdown
           t={t}
-          option={slumMenu?.sort((a, b) => a.name.localeCompare(b.name))}
+          option={slumMenu?.sort((a, b) => a?.name?.localeCompare(b.name))}
           className="form-field"
           optionKey="i18nKey"
           id="slum"
