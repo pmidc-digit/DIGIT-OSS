@@ -165,16 +165,6 @@ const CheckPage = ({ onSubmit, value }) => {
               }
             />
           )}
-          {(selectPaymentPreference?.advanceAmount ||
-            selectPaymentPreference?.advanceAmount === 0) && (
-            <Row
-              label={t("ADV_AMOUNT")}
-              text={"₹ " + t(selectPaymentPreference?.advanceAmount)}
-              actionButton={
-                <ActionButton jumpTo="/digit-ui/citizen/fsm/new-application/select-payment-preference" />
-              }
-            />
-          )}
           {(totalAmount || totalAmount === 0) && (
             <Row
               label={t("ES_PAYMENT_DETAILS_TOTAL_AMOUNT")}
