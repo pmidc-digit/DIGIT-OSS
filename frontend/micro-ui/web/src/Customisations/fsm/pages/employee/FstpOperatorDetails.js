@@ -306,16 +306,16 @@ const FstpOperatorDetails = () => {
   };
 
   const handleCreate = () => {
-    const re = new RegExp("[a-zA-Z0-9]");
+    // const re = new RegExp("[a-zA-Z0-9]");
     const dsoName = new RegExp(/^[A-Za-z0-9 ]*$/);
     const locality = new RegExp(/^[A-Za-z0-9 ]*$/);
-    if (!re.test(newVehicleNumber)) {
-      setShowToast({ key: "error", action: `ES_FSM_VEHICLE_FORMAT_TIP` });
-      setTimeout(() => {
-        closeToast();
-      }, 5000);
-      return;
-    }
+    // if (!re.test(newVehicleNumber)) {
+    //   setShowToast({ key: "error", action: `ES_FSM_VEHICLE_FORMAT_TIP` });
+    //   setTimeout(() => {
+    //     closeToast();
+    //   }, 5000);
+    //   return;
+    // }
     if (
       newDsoName === null ||
       newDsoName?.trim()?.length === 0 ||
