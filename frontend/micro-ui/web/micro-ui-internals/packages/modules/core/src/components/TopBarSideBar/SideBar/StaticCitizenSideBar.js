@@ -18,7 +18,7 @@ import {
   BirthIcon,
   DeathIcon,
   FirenocIcon,
-  LoginIcon
+  LoginIcon,
 } from "@egovernments/digit-ui-react-components";
 import { Link, useLocation } from "react-router-dom";
 import SideBarMenu from "../../../config/sidebar-menu";
@@ -64,8 +64,11 @@ const Profile = ({ info, stateName, t }) => (
       <div className="label-text"> {info?.mobileNumber} </div>
     </div>
     {info?.emailId && (
-      <div id="profile-emailid" className="label-container loc-Profile">
-        <div className="label-text"> {info.emailId} </div>
+      <div id="profile-emailid" style={{ width: "100%" }} className="label-container loc-Profile">
+        <div className="label-text" style={{ textOverflow: "ellipsis", overflow: "hidden" }}>
+          {" "}
+          {info.emailId}{" "}
+        </div>
       </div>
     )}
     <div className="profile-divider"></div>
