@@ -306,9 +306,7 @@ const FstpOperatorDetails = () => {
   };
 
   const handleCreate = () => {
-    const re = new RegExp(
-      "[A-Z]{2}\\s{0,1}[0-9]{2}\\s{0,1}[A-Z]{0,2}\\s{0,1}[0-9]{4}"
-    );
+    const re = new RegExp("[a-zA-Z0-9]");
     const dsoName = new RegExp(/^[A-Za-z0-9 ]*$/);
     const locality = new RegExp(/^[A-Za-z0-9 ]*$/);
     if (!re.test(newVehicleNumber)) {
