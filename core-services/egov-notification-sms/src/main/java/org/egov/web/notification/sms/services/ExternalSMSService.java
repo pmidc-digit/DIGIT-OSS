@@ -46,7 +46,6 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.context.annotation.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -75,9 +74,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 
 
-@Service
-
 @ConditionalOnProperty(value = "sms.enabled", havingValue = "true")
+@Service
 public class ExternalSMSService implements SMSService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSMSService.class);
 
