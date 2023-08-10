@@ -42,7 +42,7 @@ const TopBar = ({
               alt="mSeva"
             />
           </a>
-          <h3 style={{ marginTop: "8px" }}>{cityOfCitizenShownBesideLogo}</h3>
+          <h3 style={{ marginTop: "5px" }}>{cityOfCitizenShownBesideLogo}</h3>
         </div>
 
         <div className="RightMostTopBarOptions">
