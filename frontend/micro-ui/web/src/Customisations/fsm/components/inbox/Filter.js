@@ -80,7 +80,12 @@ const Filter = ({
 
   const clearAll = () => {
     if (isFstpOperator) return onFilterChange();
-    // onFilterChange({ applicationStatus: [], locality: [], uuid: { code: "ASSIGNED_TO_ME", name: "Assigned to Me" } });
+    else
+      onFilterChange({
+        applicationStatus: [],
+        locality: [],
+        uuid: { code: "ASSIGNED_TO_ALL", name: "Assigned to All" },
+      });
     // props?.onClose?.();
   };
 
