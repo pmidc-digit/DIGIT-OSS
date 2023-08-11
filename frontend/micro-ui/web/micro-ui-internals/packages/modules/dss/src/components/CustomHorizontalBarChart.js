@@ -113,11 +113,11 @@ const CustomHorizontalBarChart = ({
 
   const getVerticalWidth = (layout) => {
     if (window?.location.href.includes("dss/dashboard/pgr")) {
-      return layout === "vertical" ? 150 : 60 
+      return layout === "vertical" ? 150 : 60;
     } else {
-      return layout === "vertical" ? 120 : 60
+      return layout === "vertical" ? 120 : 60;
     }
-  }
+  };
 
   const bars = response?.responseData?.data?.map((bar) => bar?.headerName);
   return (
@@ -169,7 +169,7 @@ const CustomHorizontalBarChart = ({
             />
             <XAxis dataKey={xDataKey} type={xAxisType} tick={{ fontSize: "14px", fill: "#505A5F" }} tickCount={10} tickFormatter={tickFormatter} />
             {bars?.map((bar, id) => (
-              <Bar key={id} dataKey={t(bar)} fill={barColors[id]} stackId={bars?.length > 2 ? 1 : id} />
+              <Bar key={id} dataKey={t(`DSS_${bar?.split(" ").join("_").toUpperCase()}`)} fill={barColors[id]} stackId={bars?.length > 2 ? 1 : id} />
             ))}
             <Legend formatter={renderLegend} iconType="circle" />
             <Tooltip cursor={false} formatter={tooltipFormatter} />

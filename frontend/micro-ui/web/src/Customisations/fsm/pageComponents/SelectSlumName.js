@@ -38,29 +38,35 @@ const SelectSlumName = ({ config, onSelect, t, userType, formData }) => {
 
   useEffect(() => {
     const locality = formData?.address?.locality?.code;
-    if (userType === "employee" && !slumDataLoading && slumData) {
-      const optionalSlumData = slumData[locality]
-        ? [
-            {
-              code: null,
-              active: true,
-              name: "Not residing in slum area",
-              i18nKey: "ES_APPLICATION_NOT_SLUM_AREA",
-            },
-            ...slumData[locality],
-          ]
-        : [
-            {
-              code: null,
-              active: true,
-              name: "Not residing in slum area",
-              i18nKey: "ES_APPLICATION_NOT_SLUM_AREA",
-            },
-            slumData &&
-              Object.keys(slumData)
-                ?.map((key) => slumData[key])
-                ?.reduce((prev, curr) => [...prev, ...curr], 0),
-          ];
+    if (
+      userType === "employee" &&
+      !slumDataLoading &&
+      slumData &&
+      slumData.length > 0
+    ) {
+      const optionalSlumData =
+        slumData && slumData[locality]
+          ? [
+              {
+                code: null,
+                active: true,
+                name: "Not residing in slum area",
+                i18nKey: "ES_APPLICATION_NOT_SLUM_AREA",
+              },
+              slumData && slumData[locality],
+            ]
+          : [
+              {
+                code: null,
+                active: true,
+                name: "Not residing in slum area",
+                i18nKey: "ES_APPLICATION_NOT_SLUM_AREA",
+              },
+              slumData &&
+                Object.keys(slumData)
+                  ?.map((key) => slumData[key])
+                  ?.reduce((prev, curr) => [...prev, ...curr], 0),
+            ];
       setSlumMenu(optionalSlumData);
 
       if (!formData?.address?.slum) {
@@ -73,15 +79,20 @@ const SelectSlumName = ({ config, onSelect, t, userType, formData }) => {
         onSelect(config.key, { ...formData[config.key], slum: null });
       }
     }
-    if (userType !== "employee" && !slumDataLoading && slumData) {
+    if (
+      userType !== "employee" &&
+      !slumDataLoading &&
+      slumData &&
+      slumData.length > 0
+    ) {
       const allSlum =
         slumData &&
         Object.keys(slumData)
           ?.map((key) => slumData[key])
           ?.reduce((prev, curr) => [...prev, ...curr]);
-      slumData[locality]
-        ? setSlumMenu(slumData[locality])
-        : setSlumMenu(allSlum);
+      slumData && slumData[locality]
+        ? setSlumMenu(slumData && slumData[locality])
+        : setSlumMenu(slumData && allSlum);
     }
   }, [slumDataLoading, formData?.address?.locality?.code]);
 
