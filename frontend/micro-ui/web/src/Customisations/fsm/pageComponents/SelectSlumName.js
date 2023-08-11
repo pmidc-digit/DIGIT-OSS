@@ -65,7 +65,7 @@ const SelectSlumName = ({ config, onSelect, t, userType, formData }) => {
               slumData &&
                 Object.keys(slumData)
                   ?.map((key) => slumData[key])
-                  ?.reduce((prev, curr) => [...prev, ...curr], 0),
+                  ?.reduce((prev, curr) => [...prev, ...curr], []),
             ];
       setSlumMenu(optionalSlumData);
 
