@@ -105,7 +105,11 @@ export const NewApplication = ({ parentUrl, heading }) => {
     const gender = data.applicationData.applicantGender;
     const paymentPreference = amount === 0 ? null : data?.paymentPreference ? data?.paymentPreference : null;
     const advanceAmount =
-      amount === 0 ? null : data?.advancepaymentPreference?.advanceAmount === null ? 0 : data?.advancepaymentPreference?.advanceAmount;
+      amount === 0
+        ? 0
+        : data?.advancepaymentPreference?.advanceAmount === null || data?.advancepaymentPreference?.advanceAmount === undefined
+        ? 0
+        : data?.advancepaymentPreference?.advanceAmount;
     const gramPanchayat = data?.address.gramPanchayat;
     const village = data?.address.village;
     const propertyLocation = data?.address?.propertyLocation?.code;
