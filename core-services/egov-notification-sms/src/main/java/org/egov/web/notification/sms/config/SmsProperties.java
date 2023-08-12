@@ -159,11 +159,11 @@ public class SmsProperties {
        
         log.info("filetered message:"+msg);
         log.info("dlt_entity_id:"+dlt_entity_id);
-        log.info("dlt_template_id:"+dlt_template_id);
+        log.info("templateid:"+dlt_template_id);
  
         map.add(messageParameterName,msg );
        // map.add("dlt_entity_id",dlt_entity_id);
-        map.add("dlt_template_id",dlt_template_id);
+        map.add("templateid",dlt_template_id);
         
         populateSmsPriority(sms.getPriority(), map);
         populateAdditionalSmsParameters(map);
