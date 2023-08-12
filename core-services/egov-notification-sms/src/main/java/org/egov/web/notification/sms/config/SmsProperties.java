@@ -135,7 +135,7 @@ public class SmsProperties {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add(userParameterName, userName);
         map.add(passwordParameterName, password);
-        map.add(senderIdParameterName, smsSender);
+        //map.add(senderIdParameterName, smsSender);
         map.add(mobileNumberParameterName, getMobileNumberWithPrefix(sms.getMobileNumber()));
         //map.add(messageParameterName, sms.getMessage());
         //message is assumed to be splited in three parts first part is actual message, second part template_id and third part entity_code
@@ -162,7 +162,7 @@ public class SmsProperties {
         log.info("dlt_template_id:"+dlt_template_id);
  
         map.add(messageParameterName,msg );
-        map.add("dlt_entity_id",dlt_entity_id);
+       // map.add("dlt_entity_id",dlt_entity_id);
         map.add("dlt_template_id",dlt_template_id);
         
         populateSmsPriority(sms.getPriority(), map);
