@@ -1,4 +1,4 @@
-import { addMonths, endOfYear, format, startOfYear, subYears,subSeconds,endOfToday } from "date-fns";
+import { addMonths, endOfYear, format, startOfYear, subYears, subSeconds, endOfToday } from "date-fns";
 
 const amountFormatter = (value, denomination, t) => {
   const currencyFormatter = new Intl.NumberFormat("en-IN", { currency: "INR" });
@@ -28,7 +28,7 @@ export const formatter = (value, symbol, unit, commaSeparated = true, t) => {
         return parseInt(value);
       }
       const Nformatter = new Intl.NumberFormat("en-IN");
-      return Nformatter.format(Math.round(value));
+      return Nformatter.format(value);
     case "percentage":
       const Pformatter = new Intl.NumberFormat("en-IN", { maximumSignificantDigits: 3 });
       return `${Pformatter.format(value.toFixed(2))} %`;
@@ -64,24 +64,22 @@ export const getDefaultFinacialYear = () => {
     return {
       startDate: subYears(addMonths(startOfYear(new Date()), 3), 1),
       endDate: endOfToday(new Date()),
-        //    endDate: subYears(addMonths(endOfYear(new Date()), 3), 1), RAIN-5752 : to keep date till current date and not a financial year
-
+      //    endDate: subYears(addMonths(endOfYear(new Date()), 3), 1), RAIN-5752 : to keep date till current date and not a financial year
     };
   } else {
     return {
       startDate: addMonths(startOfYear(new Date()), 3),
       endDate: endOfToday(new Date()),
-//            endDate: addMonths(endOfYear(new Date()), 3),
-
+      //            endDate: addMonths(endOfYear(new Date()), 3),
     };
   }
 };
 
 /* Used in DSS to get the current module id */
-export const getCurrentModuleName=()=>{
- const allPaths= window.location.pathname.split('/');
- return allPaths[allPaths.length-1];
-}
+export const getCurrentModuleName = () => {
+  const allPaths = window.location.pathname.split("/");
+  return allPaths[allPaths.length - 1];
+};
 
 /* Used in DSS to get the filtered ulbs for selected city */
 export const checkSelected = (e, selectedDDRs) => {
@@ -93,7 +91,6 @@ export const checkSelected = (e, selectedDDRs) => {
     return false;
   }
 };
-
 
 /* Used in DSS to get the filtered ulbs for selected city for global filter*/
 export const getCitiesAvailable = (e, selectedDDRs) => {
