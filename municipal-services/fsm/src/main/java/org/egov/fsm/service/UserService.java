@@ -72,6 +72,10 @@ public class UserService {
 							// found user with mobilenumber and username same and name as equal
 							//condition gets executed when logged-in citizen applies for application.
 
+							if (applicant != null && applicant.getGender() != null) {
+								user.setGender(applicant.getGender());
+							}
+
 							applicant = user;
 							foundUser = Boolean.TRUE;
 							isCitizenRegisteredOnCitizPortal = Boolean.TRUE;
@@ -85,6 +89,10 @@ public class UserService {
 									&& user.getMobileNumber().equalsIgnoreCase(applicant.getMobileNumber())
 									&& user.getName().equalsIgnoreCase(applicant.getName())) {
 								//Checking if user exists with same name and mobilenumber but citizen has not registered on the portal
+
+								if (applicant != null && applicant.getGender() != null) {
+									user.setGender(applicant.getGender());
+								}
 								applicant = user;
 								foundUser = Boolean.TRUE;
 								break;
@@ -113,6 +121,10 @@ public class UserService {
 				// the new user as applicant.
 				applicantDetailResponse = createApplicant(applicant, fsmRequest.getRequestInfo(), Boolean.TRUE);
 				applicant = applicantDetailResponse.getUser().get(0);
+			}
+
+			if (fsm.getCitizen() != null && fsm.getCitizen().getGender() != null) {
+				applicant.setGender(fsm.getCitizen().getGender());
 			}
 
 			fsm.setCitizen(applicant);
@@ -176,7 +188,6 @@ public class UserService {
 	 * Checks if the user exists in the database
 	 * 
 	 * @param applicant   The applicant from the FSM Application
-	 * @param requestInfo The requestInfo of the request
 	 * @return The search response from the user service
 	 */
 	private UserDetailResponse userExists(User applicant) {
