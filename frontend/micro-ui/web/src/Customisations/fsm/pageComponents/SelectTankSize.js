@@ -38,7 +38,19 @@ const SelectTankSize = ({ config, onSelect, t, formData = {}, userType }) => {
     }
   }, [tankDimension]);
   useEffect(() => {
-    if (size && (size?.length || size?.diameter)) {
+    if (
+      isConventionalSpecticTank(tankDimension) &&
+      size?.length &&
+      size?.width &&
+      size?.height
+    ) {
+      setDisable(false);
+    }
+    if (
+      !isConventionalSpecticTank(tankDimension) &&
+      size?.height &&
+      size?.diameter
+    ) {
       setDisable(false);
     }
   }, [size]);
