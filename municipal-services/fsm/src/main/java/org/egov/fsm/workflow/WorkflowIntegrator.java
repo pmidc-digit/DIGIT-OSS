@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.egov.common.contract.request.RequestInfo;
 import org.egov.fsm.config.FSMConfiguration;
 import org.egov.fsm.util.FSMConstants;
 import org.egov.fsm.util.FSMErrorConstants;
@@ -92,14 +93,19 @@ public class WorkflowIntegrator {
 
 		Double tripAmount = getAdditionalDetails(fsm.getAdditionalDetails());
 
+		Boolean isCitizen = Boolean.FALSE;
+		RequestInfo requestInfo = fsmRequest.getRequestInfo();
+		if (requestInfo.getUserInfo().getType().equalsIgnoreCase("CITIZEN"))
+			isCitizen = Boolean.TRUE;
+
 		if (FSMConstants.FSM_PAYMENT_PREFERENCE_POST_PAY.equalsIgnoreCase(fsmRequest.getFsm().getPaymentPreference())) {
 			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_POST_PAY_BUSINESSSERVICE);
 		} else if (FSMConstants.FSM_PAYMENT_PREFERENCE_PRE_PAY
 				.equalsIgnoreCase(fsmRequest.getFsm().getPaymentPreference())) {
 			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_BUSINESSSERVICE);
-		} else if (fsm.getAdvanceAmount().intValue() == 0 && fsm.getPaymentPreference() == null	&& tripAmount <= 0) {
+		} else if (!isCitizen && fsm.getAdvanceAmount().intValue() == 0 && fsm.getPaymentPreference() == null	&& tripAmount <= 0) {
 			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_ZERO_PRICE_SERVICE);
-		} else if (fsm.getAdvanceAmount() != null && fsm.getAdvanceAmount().intValue() > 0) {
+		} else if (!isCitizen && fsm.getAdvanceAmount() != null && fsm.getAdvanceAmount().intValue() > 0) {
 			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_ADVANCE_PAY_BUSINESSSERVICE);
 		} else {
 			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_LATER_PAY_SERVICE);
