@@ -218,7 +218,7 @@ public class WorkflowIntegrator {
 		Boolean isCitizenCreatedApplication = Boolean.FALSE;
 
 		if (fsmAdditionalDetails != null && fsmAdditionalDetails.get("isCitizenCreatedApplication") != null)
-			isCitizenCreatedApplication = Boolean.valueOf(fsmAdditionalDetails.get("isCitizenCreatedApplication"));
+			isCitizenCreatedApplication = Boolean.parseBoolean(String.valueOf(fsmAdditionalDetails.get("isCitizenCreatedApplication")));
 
 		return isCitizenCreatedApplication;
 	}
