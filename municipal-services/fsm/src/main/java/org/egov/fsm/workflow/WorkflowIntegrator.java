@@ -93,19 +93,16 @@ public class WorkflowIntegrator {
 
 		Double tripAmount = getAdditionalDetails(fsm.getAdditionalDetails());
 
-		Boolean isCitizen = Boolean.FALSE;
-		RequestInfo requestInfo = fsmRequest.getRequestInfo();
-		if (requestInfo.getUserInfo().getType().equalsIgnoreCase("CITIZEN"))
-			isCitizen = Boolean.TRUE;
+		Boolean isCitizenCreatedApplication = getAdditionalDetailsCitizenCreatedApplication(fsm.getAdditionalDetails());
 
 		if (FSMConstants.FSM_PAYMENT_PREFERENCE_POST_PAY.equalsIgnoreCase(fsmRequest.getFsm().getPaymentPreference())) {
 			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_POST_PAY_BUSINESSSERVICE);
 		} else if (FSMConstants.FSM_PAYMENT_PREFERENCE_PRE_PAY
 				.equalsIgnoreCase(fsmRequest.getFsm().getPaymentPreference())) {
 			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_BUSINESSSERVICE);
-		} else if (!isCitizen && fsm.getAdvanceAmount().intValue() == 0 && fsm.getPaymentPreference() == null	&& tripAmount <= 0) {
+		} else if (!isCitizenCreatedApplication && fsm.getAdvanceAmount().intValue() == 0 && fsm.getPaymentPreference() == null	&& tripAmount <= 0) {
 			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_ZERO_PRICE_SERVICE);
-		} else if (!isCitizen && fsm.getAdvanceAmount() != null && fsm.getAdvanceAmount().intValue() > 0) {
+		} else if (!isCitizenCreatedApplication && fsm.getAdvanceAmount() != null && fsm.getAdvanceAmount().intValue() > 0) {
 			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_ADVANCE_PAY_BUSINESSSERVICE);
 		} else {
 			obj.put(BUSINESSSERVICEKEY, FSMConstants.FSM_LATER_PAY_SERVICE);
@@ -197,6 +194,33 @@ public class WorkflowIntegrator {
 			tripAmount = Double.valueOf(String.valueOf(fsmAdditionalDetails.get("tripAmount")));
 
 		return tripAmount;
+	}
+
+
+	/**
+	 * Method to return Boolean value if application is created from citizen's end
+	 *
+	 * @param additionalDetails
+	 */
+	public Boolean getAdditionalDetailsCitizenCreatedApplication(Object additionalDetails) {
+
+		ObjectMapper mapper = new ObjectMapper();
+		Object additionalDetailsObject = new Object();
+
+		if(additionalDetails instanceof ObjectNode)
+			additionalDetailsObject = mapper.convertValue(additionalDetails, Object.class);
+		else
+			additionalDetailsObject = additionalDetails;
+
+		Map<String, String> fsmAdditionalDetails = additionalDetailsObject != null
+				? (Map<String, String>) additionalDetailsObject : new HashMap<>();
+
+		Boolean isCitizenCreatedApplication = Boolean.FALSE;
+
+		if (fsmAdditionalDetails != null && fsmAdditionalDetails.get("isCitizenCreatedApplication") != null)
+			isCitizenCreatedApplication = Boolean.parseBoolean(String.valueOf(fsmAdditionalDetails.get("isCitizenCreatedApplication")));
+
+		return isCitizenCreatedApplication;
 	}
 
 }
