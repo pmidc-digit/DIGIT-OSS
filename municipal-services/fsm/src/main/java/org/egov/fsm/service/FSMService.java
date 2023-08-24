@@ -170,19 +170,16 @@ public class FSMService {
 
 		Double tripAmount = wfIntegrator.getAdditionalDetails(fsm.getAdditionalDetails());
 
-		Boolean isCitizen = Boolean.FALSE;
-
-		if (requestInfo.getUserInfo().getType().equalsIgnoreCase("CITIZEN"))
-			isCitizen = Boolean.TRUE;
+		Boolean isCitizenCreatedApplication = wfIntegrator.getAdditionalDetailsCitizenCreatedApplication(fsm.getAdditionalDetails());
 
 		if (FSMConstants.FSM_PAYMENT_PREFERENCE_POST_PAY.equalsIgnoreCase(fsmRequest.getFsm().getPaymentPreference()))
 			businessServiceName = FSMConstants.FSM_POST_PAY_BUSINESSSERVICE;
 		else if (FSMConstants.FSM_PAYMENT_PREFERENCE_PRE_PAY
 				.equalsIgnoreCase(fsmRequest.getFsm().getPaymentPreference()))
 			businessServiceName = FSMConstants.FSM_BUSINESSSERVICE;
-		else if (!isCitizen && fsm.getAdvanceAmount().intValue() == 0 && fsm.getPaymentPreference() == null	&& tripAmount <= 0)
+		else if (!isCitizenCreatedApplication && fsm.getAdvanceAmount().intValue() == 0 && fsm.getPaymentPreference() == null	&& tripAmount <= 0)
 			businessServiceName = FSMConstants.FSM_ZERO_PRICE_SERVICE;
-		else if (!isCitizen && fsm.getAdvanceAmount() != null && fsm.getAdvanceAmount().intValue() > 0)
+		else if (!isCitizenCreatedApplication && fsm.getAdvanceAmount() != null && fsm.getAdvanceAmount().intValue() > 0)
 			businessServiceName = FSMConstants.FSM_ADVANCE_PAY_BUSINESSSERVICE;
 		else
 			businessServiceName = FSMConstants.FSM_LATER_PAY_SERVICE;
