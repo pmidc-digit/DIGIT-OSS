@@ -189,6 +189,7 @@ const Response = ({ data, onSuccess }) => {
               typeof advanceAmount === "number"
                 ? JSON.stringify(advanceAmount)
                 : advanceAmount,
+            isCitizenCreatedApplication: true,
           },
           workflow: null,
         };

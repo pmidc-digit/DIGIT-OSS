@@ -128,6 +128,7 @@ export const NewApplication = ({ parentUrl, heading }) => {
         source: applicationChannel.code,
         additionalDetails: {
           tripAmount: typeof amount === "number" ? JSON.stringify(amount) : amount,
+          isCitizenCreatedApplication: false,
         },
         propertyUsage: data?.subtype,
         vehicleCapacity: data?.tripData?.vehicleType?.capacity,
