@@ -112,11 +112,15 @@ const SelectSlumName = ({ config, onSelect, t, userType, formData }) => {
 
   function goNext() {
     sessionStorage.removeItem("Digit.total_amount");
-    onSelect(config.key, {
-      ...formData[config.key],
-      slum: slum.code,
-      slumData: slum,
-    });
+    if (slum !== undefined) {
+      onSelect(config.key, {
+        ...formData[config.key],
+        slum: slum.code,
+        slumData: slum,
+      });
+    } else {
+      onSelect();
+    }
   }
 
   if (slumDataLoading) return <Loader />;

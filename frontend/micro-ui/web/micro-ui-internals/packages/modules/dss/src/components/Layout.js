@@ -16,6 +16,8 @@ const showCustomLabel = (title, t) => {
   switch (title) {
     case "DSS_FSM_MONTHLY_WASTE_CAL":
       return `${t("DSS_WASTE_RECIEVED")} ${t(`DSS_WASTE_UNIT`)}`;
+    case "DSS_FSM_TOTAL_REQUESTS_FROM_GP":
+      return `${t("TOTAL_APPLICATIONS")}`;
     default:
       return "";
   }
