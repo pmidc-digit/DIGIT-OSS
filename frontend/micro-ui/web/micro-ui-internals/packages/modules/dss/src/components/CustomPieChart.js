@@ -104,7 +104,9 @@ const CustomPieChart = ({ dataKey = "value", data, setChartDenomination, moduleC
       >
         <p className="recharts-tooltip-label">{`${t(
           `COMMON_MASTERS_${payload?.[0]?.name && Digit.Utils.locale.getTransformedLocale(payload?.[0]?.name)}`
-        )}: ${Digit.Utils.dss.formatter(payload?.[0]?.value, payload?.[0]?.payload?.payload?.symbol, value?.denomination, true, t)}`}</p>
+        )}: ${Digit.Utils.dss.formatter(payload?.[0]?.value, payload?.[0]?.payload?.payload?.symbol, value?.denomination, true, t)} ${
+          id === "fsmTotalSludgeFromSource" && (payload?.[0]?.name === "Locality" || payload?.[0]?.name === "GP") ? "Ltrs" : ""
+        }`}</p>
         <p>{`(${Number((payload?.[0]?.value / response?.responseData?.data?.[0]?.headerValue) * 100).toFixed(1)}%)`}</p>
       </div>
     );
