@@ -24,6 +24,8 @@ const FSMCard = () => {
   const FSM_EDITOR = Digit.UserService.hasAccess("FSM_EDITOR_EMP") || false;
   const FSM_CREATOR = Digit.UserService.hasAccess("FSM_CREATOR_EMP") || false;
   const isFSTPOperator = Digit.UserService.hasAccess("FSM_EMP_FSTPO") || false;
+  const DASHBOARD_VIEWER =
+    Digit.UserService.hasAccess("FSM_DASHBOARD_VIEWER") || false;
   const isSwachSathiEmployee =
     Digit.UserService.hasAccess("FSM_SWACHH_SATHI") || false;
 
@@ -141,6 +143,11 @@ const FSMCard = () => {
           label: t("ES_TITLE_FSM_REGISTRY"),
           icon: <AddNewIcon />,
         },
+      ]
+    : [];
+
+  const moduleForFSMDashboard = DASHBOARD_VIEWER
+    ? [
         {
           link: "/digit-ui/employee/dss/dashboard/fsm",
           label: t("ES_TITLE_FSM_DASHBOARD"),
@@ -206,6 +213,7 @@ const FSMCard = () => {
             link: `/digit-ui/employee/fsm/new-application`,
           },
           ...moduleForSomeFSMAdmin,
+          ...moduleForFSMDashboard,
         ],
       };
   return <EmployeeModuleCard {...propsForModuleCard} FsmHideCount={true} />;
