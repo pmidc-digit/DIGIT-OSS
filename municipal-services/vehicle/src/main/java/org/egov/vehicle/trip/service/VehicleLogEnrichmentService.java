@@ -89,7 +89,10 @@ public class VehicleLogEnrichmentService {
 				Object additionalDetailsObject = vehicleTrip.getAdditionalDetails();
 				Map<String, String> vehicleTripAdditionalDetails = additionalDetailsObject != null
 						? (Map<String, String>) additionalDetailsObject : new HashMap<>();
-				if (vehicleTripAdditionalDetails.get("vehicleNumber") != null && vehicleTrip.getVolumeCarried() != null) {
+				//Updates the tripdetails.volume as volumeCarried in case of Un-registered Vehicle logs
+				if (vehicleTripAdditionalDetails.get("vehicleNumber") != null && vehicleTrip.getVolumeCarried() != null
+						&& (vehicleTrip.getTripDetails().get(0).getVolume() == null
+						|| vehicleTrip.getTripDetails().get(0).getVolume() == 0)) {
 					vehicleTrip.getTripDetails().get(0).setVolume(vehicleTrip.getVolumeCarried());
 				}
 			}
