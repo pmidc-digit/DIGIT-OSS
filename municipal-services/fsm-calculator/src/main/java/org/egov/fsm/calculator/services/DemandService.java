@@ -165,16 +165,9 @@ public class DemandService {
 						BigDecimal::add);
 				diffInTaxAmount = taxHeadEstimate.getEstimateAmount().subtract(total);
 				if (diffInTaxAmount.compareTo(BigDecimal.ZERO) != 0) {
-					BigDecimal totalPaid = demandDetailList.stream().map(DemandDetail::getCollectionAmount).reduce(BigDecimal.ZERO,
-							BigDecimal::add);
-					if(taxHeadEstimate.getEstimateAmount() == totalPaid)
-						newDemandDetails.add(DemandDetail.builder().taxAmount(diffInTaxAmount)
+					newDemandDetails.add(DemandDetail.builder().taxAmount(diffInTaxAmount)
 							.taxHeadMasterCode(taxHeadEstimate.getTaxHeadCode()).tenantId(calculation.getTenantId())
-							.collectionAmount(BigDecimal.ZERO).isPaymentCompleted(Boolean.TRUE).build());
-					else
-						newDemandDetails.add(DemandDetail.builder().taxAmount(diffInTaxAmount)
-								.taxHeadMasterCode(taxHeadEstimate.getTaxHeadCode()).tenantId(calculation.getTenantId())
-								.collectionAmount(BigDecimal.ZERO).build());
+							.collectionAmount(BigDecimal.ZERO).build());
 				}
 			}
 		}
