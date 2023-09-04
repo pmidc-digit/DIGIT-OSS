@@ -43,4 +43,7 @@ public class DemandDetail {
     @JsonProperty("tenantId")
     private String tenantId;
 
+    @Default
+    private Boolean isPaymentCompleted = false;
+
 }
