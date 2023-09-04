@@ -167,7 +167,7 @@ public class DemandService {
 				if (diffInTaxAmount.compareTo(BigDecimal.ZERO) != 0) {
 					BigDecimal totalPaid = demandDetailList.stream().map(DemandDetail::getCollectionAmount).reduce(BigDecimal.ZERO,
 							BigDecimal::add);
-					if(taxHeadEstimate.getEstimateAmount() == totalPaid)
+					if(taxHeadEstimate.getEstimateAmount().equals(totalPaid))
 						newDemandDetails.add(DemandDetail.builder().taxAmount(diffInTaxAmount)
 							.taxHeadMasterCode(taxHeadEstimate.getTaxHeadCode()).tenantId(calculation.getTenantId())
 							.collectionAmount(BigDecimal.ZERO).isPaymentCompleted(Boolean.TRUE).build());
