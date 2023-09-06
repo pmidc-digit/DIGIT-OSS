@@ -136,6 +136,19 @@ const FSMCard = () => {
   //       ]
   //     : [];
 
+  const moduleForFSMCreate = FSM_CREATOR
+    ? [
+        {
+          count: total,
+          label: t("ES_COMMON_INBOX"),
+          link: `/digit-ui/employee/fsm/inbox`,
+        },
+        {
+          label: t("ES_TITLE_NEW_DESULDGING_APPLICATION"),
+          link: `/digit-ui/employee/fsm/new-application`,
+        },
+      ]
+    : [];
   const moduleForSomeFSMAdmin = FSM_ADMIN
     ? [
         {
@@ -203,15 +216,7 @@ const FSMCard = () => {
           },
         ],
         links: [
-          {
-            count: total,
-            label: t("ES_COMMON_INBOX"),
-            link: `/digit-ui/employee/fsm/inbox`,
-          },
-          {
-            label: t("ES_TITLE_NEW_DESULDGING_APPLICATION"),
-            link: `/digit-ui/employee/fsm/new-application`,
-          },
+          ...moduleForFSMCreate,
           ...moduleForSomeFSMAdmin,
           ...moduleForFSMDashboard,
         ],
