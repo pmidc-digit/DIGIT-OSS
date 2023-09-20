@@ -184,12 +184,12 @@ const Response = ({ data, onSuccess }) => {
                 typeof amountPerTrip === "number"
                   ? JSON.stringify(amountPerTrip)
                   : amountPerTrip,
+              isCitizenCreatedApplication: true,
             },
             advanceAmount:
               typeof advanceAmount === "number"
                 ? JSON.stringify(advanceAmount)
                 : advanceAmount,
-            isCitizenCreatedApplication: true,
           },
           workflow: null,
         };
