@@ -57,7 +57,7 @@ export const CollectPayment = (props) => {
   const defaultPaymentModes = [
     { code: "CASH", label: t("COMMON_MASTERS_PAYMENTMODE_CASH") },
     { code: "CHEQUE", label: t("COMMON_MASTERS_PAYMENTMODE_CHEQUE") },
-    { code: "CARD", label: t("COMMON_MASTERS_PAYMENTMODE_CREDIT/DEBIT CARD") },
+    // { code: "CARD", label: t("COMMON_MASTERS_PAYMENTMODE_CREDIT/DEBIT CARD") },
     // { code: "DD", label: "Demand Draft" },
     // { code: "OFFLINE_NEFT", label: "Offline NEFT" },
     // { code: "OFFLINE_RTGS", label: "Offline RTGS" },
